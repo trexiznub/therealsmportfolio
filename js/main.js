@@ -1,57 +1,157 @@
 /* =====================================================================
-   Ujwal Raj K. P — portfolio behaviour
-     1. helpers
-     2. scroll: progress bar, nav state, active link
-     3. mobile menu
-     4. reveals: split headings, staggered fade-ups, counters, bars
-     5. hero: intro sequence + portrait (loading, scan reveal, parallax, slices)
-     6. cursor + magnetic buttons (desktop only)
-     7. placeholders (resume, form, back-to-top)
+   main.js — page behaviour (3D models live in scene.js)
+   1 helpers  2 loading screen, welcome, photo stage  3 reveals  4 counters + bars
+   5 nav, progress, menu  6 back to top  7 contact form → Google Sheet
    ===================================================================== */
 (() => {
   'use strict';
-
-  /* ---------- 1. helpers ---------- */
-  const $  = (s, c = document) => c.querySelector(s);
+  const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  /* ---------- 2. scroll ---------- */
-  const progress = $('#progress');
-  const nav = $('#nav');
-  let scrollQueued = false;
+  /* ---------- 2. loading screen + welcome ---------- */
+  // Progress follows real work: fonts and the hero portrait. The screen stays at least
+  // ~2.4s on a first visit (so the greeting can play) and ~0.7s on repeat visits in the
+  // same browser session; it never stays longer than 6s even on a very slow connection.
+  $$('.hi').forEach((el, i) => el.style.setProperty('--d', 700 + i * 110 + 'ms'));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  let seen = false;
+  try { seen = sessionStorage.getItem('uj-seen') === '1'; sessionStorage.setItem('uj-seen', '1'); } catch (e) {}
+  const minTime = reduce ? 0 : seen ? 700 : 2400;
+  const loader = $('#loader'), pctEl = $('#ldPct'), barEl = $('#ldBar'), words = $$('.ld-hello span');
+  document.body.classList.add('loading');
+
+  const fontLink = $('#gfonts');
+  const cssLoaded = !fontLink || fontLink.sheet ? Promise.resolve() : new Promise(r => {
+    fontLink.addEventListener('load', r, { once: true }); fontLink.addEventListener('error', r, { once: true });
+  });
+  const fonts = cssLoaded.then(() => document.fonts ? document.fonts.load('600 1em "DM Sans"').catch(() => {}) : null);
+
+  const fig = $('#heroFig'), photo = $('.hero-photo');
+  const photoReady = new Promise(res => {
+    if (!photo) return res();
+    const done = () => (photo.decode ? photo.decode().catch(() => {}) : Promise.resolve()).then(res);
+    if (photo.complete && photo.naturalWidth) done();
+    else { photo.addEventListener('load', done, { once: true }); photo.addEventListener('error', res, { once: true }); }
+  });
+
+  let real = 0;
+  [fonts, photoReady].forEach(p => p.then(() => { real += 0.5; }));
+  const t0 = performance.now();
+  let shown = 0, finished = false;
+  (function tick(now) {
+    // time-based ease toward the real progress, so the counter always moves smoothly
+    const timeShare = Math.min((now - t0) / Math.max(minTime, 1), 1);
+    const target = Math.min(real, timeShare) * 100;
+    shown += (target - shown) * 0.12;
+    if (target === 100 && shown > 99.4) shown = 100;
+    pctEl.textContent = Math.floor(shown);
+    barEl.style.transform = `scaleX(${shown / 100})`;
+    if (!finished) requestAnimationFrame(tick);
+  })(t0);
+
+  // greeting words: Hello → Namaste → Welcome
+  if (!seen && !reduce) {
+    words.forEach((w, i) => setTimeout(() => {
+      if (i) words[i - 1].classList.replace('on', 'off');
+      w.classList.add('on');
+    }, 150 + i * 700));
+  } else words[words.length - 1].classList.add('on');
+
+  Promise.race([Promise.all([fonts, photoReady, wait(minTime)]), wait(6000)]).then(() => {
+    real = 1;
+    const close = () => {
+      if (shown < 100) return requestAnimationFrame(close);
+      finished = true;
+      setTimeout(() => {
+        root.classList.add('ready');          // loader wipes up, hero welcome animation starts
+        fig.classList.add('is-sharp');
+        document.body.classList.remove('loading');
+        setTimeout(() => { if (loader) loader.remove(); }, 1200);
+      }, 180);
+    };
+    close();
+  });
+
+  // photo stage: tilts toward the cursor, soft light follows it
+  if (fine && !reduce && fig) {
+    fig.addEventListener('mousemove', e => {
+      const r = fig.getBoundingClientRect(), u = (e.clientX - r.left) / r.width, v = (e.clientY - r.top) / r.height;
+      fig.classList.add('live');
+      fig.style.setProperty('--ry', (u - 0.5) * 8 + 'deg');
+      fig.style.setProperty('--rx', (0.5 - v) * 6 + 'deg');
+      fig.style.setProperty('--mx', u * 100 + '%'); fig.style.setProperty('--my', v * 100 + '%');
+    });
+    fig.addEventListener('mouseleave', () => { fig.classList.remove('live'); fig.style.setProperty('--ry', '0deg'); fig.style.setProperty('--rx', '0deg'); });
+  }
+  // the stage lies back slightly and stands up as you scroll into it
+  const stageIO = () => {
+    if (!fig || fig.classList.contains('live')) return;
+    const r = fig.getBoundingClientRect(), p = Math.max(0, Math.min(1, (innerHeight - r.top) / (innerHeight * 0.9)));
+    fig.style.setProperty('--rx', (1 - p) * 14 + 'deg');
+  };
+
+  // marquee: duplicate the list once so the loop is seamless
+  $$('.marquee ul').forEach(ul => { ul.insertAdjacentHTML('beforeend', ul.innerHTML.replace(/<li>/g, '<li aria-hidden="true">')); });
+
+  /* ---------- 3. reveals ---------- */
+  const revealIO = new IntersectionObserver(entries => {
+    entries.filter(e => e.isIntersecting).forEach((e, i) => {
+      e.target.style.setProperty('--d', Math.min(i, 5) * 90 + 'ms');
+      e.target.classList.add('in');
+      revealIO.unobserve(e.target);
+      setTimeout(() => e.target.style.setProperty('--d', '0ms'), 1500);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+  $$('.reveal').forEach(el => revealIO.observe(el));
+
+  /* ---------- 4. counters + bars ---------- */
+  function countUp(el) {
+    const target = parseInt(el.dataset.count, 10), prefix = el.dataset.prefix || '', suffix = el.dataset.suffix || '';
+    const show = v => { el.innerHTML = (prefix ? '<span class="pre">' + prefix.trim() + '</span>' : '') + v.toLocaleString('en-US') + suffix; };
+    if (reduce) return show(target);
+    const start = performance.now(), dur = 1600;
+    (function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      show(Math.round((1 - Math.pow(1 - p, 4)) * target));
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+  }
+  const countIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { countUp(e.target); countIO.unobserve(e.target); } }), { threshold: 0.6 });
+  $$('[data-count]').forEach(c => countIO.observe(c));
+
+  const barIO = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    $$('.bar span', e.target).forEach((b, i) => { b.style.setProperty('--d', i * 100 + 'ms'); b.style.width = b.dataset.w + '%'; });
+    barIO.unobserve(e.target);
+  }), { threshold: 0.3 });
+  $$('.skill-cat').forEach(c => barIO.observe(c));
+
+  /* ---------- 5. nav, progress, menu ---------- */
+  const nav = $('#nav'), progress = $('#progress'), links = $$('.navlinks a');
+  let queued = false, lastY = 0;
+  const menu = $('#mobilemenu');
   function onScroll() {
-    scrollQueued = false;
+    queued = false;
     const max = root.scrollHeight - root.clientHeight;
     progress.style.transform = `scaleX(${max > 0 ? root.scrollTop / max : 0})`;
-    nav.classList.toggle('scrolled', root.scrollTop > 10);
+    nav.classList.toggle('hide', root.scrollTop > lastY && root.scrollTop > 500 && !menu.classList.contains('open'));
+    lastY = root.scrollTop;
+    stageIO();
   }
-  addEventListener('scroll', () => {
-    if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(onScroll); }
-  }, { passive: true });
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
+  const secIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+  }), { rootMargin: '-45% 0px -45% 0px' });
+  $$('main section[id], header[id]').forEach(s => secIO.observe(s));
 
-  const navLinks = $$('.navlinks a');
-  const sectionObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const id = e.target.id;
-        navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
-      }
-    });
-  }, { rootMargin: '-45% 0px -45% 0px' });
-  $$('section[id], header[id]').forEach(s => sectionObserver.observe(s));
-
-  /* ---------- 3. mobile menu ---------- */
   const burger = $('#hamburger');
-  const menu = $('#mobilemenu');
   function setMenu(open) {
-    burger.classList.toggle('open', open);
-    menu.classList.toggle('open', open);
-    burger.setAttribute('aria-expanded', open);
-    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    burger.classList.toggle('open', open); menu.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     document.body.style.overflow = open ? 'hidden' : '';
   }
   burger.addEventListener('click', () => setMenu(!menu.classList.contains('open')));
@@ -59,201 +159,63 @@
   addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
   matchMedia('(min-width: 901px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
 
-  /* ---------- 4. reveals ---------- */
-  // Headings: split into words so each one rises through a mask. Text is untouched.
-  $$('.sec-title, .contact-title').forEach(h => {
-    const text = h.textContent.trim();
-    h.setAttribute('aria-label', text);
-    h.textContent = '';
-    text.split(/\s+/).forEach((word, i, all) => {
-      const w = document.createElement('span');
-      const s = document.createElement('span');
-      w.className = 'w';
-      w.setAttribute('aria-hidden', 'true');
-      s.textContent = word;
-      s.style.setProperty('--i', i);
-      w.appendChild(s);
-      h.appendChild(w);
-      if (i < all.length - 1) h.appendChild(document.createTextNode(' '));
-    });
-  });
-
-  // Everything else fades up; items that enter together are staggered.
-  const revealObserver = new IntersectionObserver(entries => {
-    entries.filter(e => e.isIntersecting).forEach((e, i) => {
-      e.target.style.setProperty('--i', Math.min(i, 5));
-      e.target.classList.add('in');
-      revealObserver.unobserve(e.target);
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-  $$('.reveal').forEach(el => revealObserver.observe(el));
-
-  // Stat counters
-  function countUp(el) {
-    const target = parseInt(el.dataset.count, 10);
-    const prefix = el.dataset.prefix || '';
-    const suffix = el.dataset.suffix || '';
-    if (reduce) { el.textContent = prefix + target + suffix; return; }
-    const start = performance.now(), dur = 1400;
-    (function tick(now) {
-      const p = Math.min((now - start) / dur, 1);
-      el.textContent = prefix + Math.floor((1 - Math.pow(1 - p, 3)) * target) + suffix;
-      if (p < 1) requestAnimationFrame(tick);
-      else el.textContent = prefix + target + suffix;
-    })(start);
-  }
-  const countObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { countUp(e.target); countObserver.unobserve(e.target); } });
-  }, { threshold: 0.4 });
-  $$('.num[data-count]').forEach(c => countObserver.observe(c));
-
-  // Skill bars
-  const barObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.style.width = e.target.dataset.w + '%'; barObserver.unobserve(e.target); }
-    });
-  }, { threshold: 0.4 });
-  $$('.bar span[data-w]').forEach(b => barObserver.observe(b));
-
-  /* ---------- 5. hero ---------- */
-  const fig = $('#heroFig');
-  const wrap = $('#heroPhoto');
-  const img = $('.hero-photo', fig);
-  const word = $('.hero-word');
-
-  // 5a. text intro waits for the fonts (hard limit 1.5s) so the name never swaps typeface mid-animation.
-  //     The font stylesheet is non-blocking, so first paint (and the portrait placeholder) never waits for it.
-  const fontLink = $('#gfonts');
-  const cssLoaded = !fontLink || fontLink.sheet ? Promise.resolve() : new Promise(r => {
-    fontLink.addEventListener('load', r, { once: true });
-    fontLink.addEventListener('error', r, { once: true });
-  });
-  const fontsLoaded = cssLoaded.then(() => (document.fonts
-    ? Promise.all(['900 1em "Inter Tight"', '700 1em "Inter Tight"', '400 1em Inter'].map(f => document.fonts.load(f))).catch(() => {})
-    : null));
-  Promise.race([fontsLoaded, new Promise(r => setTimeout(r, 1500))]).then(() => root.classList.add('ready'));
-
-  // 5b. portrait: wait until the image is fully decoded, then reveal it. The inline
-  //     blur placeholder is already on screen, so the hero is never empty while this happens.
-  const imageLoaded = new Promise(resolve => {
-    if (img.complete && img.naturalWidth) return resolve();
-    img.addEventListener('load', resolve, { once: true });
-    img.addEventListener('error', resolve, { once: true });
-  });
-
-  let slices = [];
-  let introDone = false;
-  let slicing = false;
-  const N = 14;
-
-  function buildSlices() {
-    const src = img.currentSrc || img.src;     // same URL the <img> chose → served from cache
-    const box = document.createElement('div');
-    box.className = 'hero-slices';
-    for (let i = 0; i < N; i++) {
-      const d = document.createElement('div');
-      d.className = 'sl';
-      d.style.backgroundImage = `url("${src}")`;
-      // 1px overlap hides sub-pixel seams between neighbouring slices
-      d.style.clipPath = `inset(calc(${(i * 100) / N}% - .5px) 0 calc(${100 - ((i + 1) * 100) / N}% - .5px) 0)`;
-      box.appendChild(d);
-      slices.push(d);
-    }
-    wrap.insertBefore(box, $('.hero-light', wrap));
-  }
-
-  function setSlicing(on) {
-    if (on === slicing) return;
-    slicing = on;
-    fig.classList.toggle('mode-slices', on);
-    fig.classList.toggle('mode-base', !on);
-  }
-
-  function revealPortrait() {
-    if (!img.naturalWidth || reduce) {            // broken image or reduced motion → plain fade
-      fig.classList.add('fade', 'is-sharp', 'mode-base');
-      introDone = true;
-      return;
-    }
-    buildSlices();
-    slices.forEach((d, i) => {
-      const dir = i % 2 ? 1 : -1;
-      d.style.opacity = 0;
-      d.style.transform = `translate3d(${dir * (14 + (i % 5) * 4)}px,0,0)`;
-      const delay = 0.15 + i * 0.04;
-      d.style.transition = `transform 1.1s cubic-bezier(.22,.61,.36,1) ${delay}s, opacity .8s ease ${delay}s`;
-    });
-    fig.classList.add('mode-slices');
-    slicing = true;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      fig.classList.add('scanning', 'is-sharp');
-      slices.forEach(d => { d.style.opacity = 1; d.style.transform = 'translate3d(0,0,0)'; });
-    }));
-    setTimeout(() => {                             // intro finished → hand over to the clean <img>
-      slices.forEach(d => { d.style.transition = 'none'; });
-      fig.classList.remove('scanning');
-      introDone = true;
-      setSlicing(false);
-    }, 1900);
-  }
-
-  imageLoaded
-    .then(() => (img.decode ? img.decode().catch(() => {}) : null))
-    .then(revealPortrait);
-
-
-
-  /* ---------- 6. cursor + magnetic buttons ---------- */
-  if (finePointer) {
-    document.body.classList.add('has-cursor');
-    const dot = $('#cursor-dot');
-    const ring = $('#cursor-ring');
-    const label = $('span', ring);
-    let mx = 0, my = 0, rx = 0, ry = 0, raf = 0;
-
-    function ringLoop() {
-      raf = 0;
-      rx += (mx - rx) * 0.2; ry += (my - ry) * 0.2;
-      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
-      if (Math.abs(mx - rx) > 0.1 || Math.abs(my - ry) > 0.1) raf = requestAnimationFrame(ringLoop);
-    }
-    addEventListener('mousemove', e => {
-      if (!document.body.classList.contains('cursor-on')) { rx = mx = e.clientX; ry = my = e.clientY; document.body.classList.add('cursor-on'); }
-      mx = e.clientX; my = e.clientY;
-      dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
-      if (!raf) raf = requestAnimationFrame(ringLoop);
-    }, { passive: true });
-    document.addEventListener('mouseleave', () => document.body.classList.remove('cursor-on'));
-
-    const GROW = 'a, button, .btn, input, textarea, .project-card:not(.placeholder), .cert-card, .lead-card, .hero-fig';
-    document.addEventListener('mouseover', e => {
-      const t = e.target.closest(GROW);
-      if (!t) return;
-      ring.classList.add('grow');
-      label.textContent = t.dataset.cursorLabel || '';
-    });
-    document.addEventListener('mouseout', e => {
-      const t = e.target.closest(GROW);
-      if (t && !t.contains(e.relatedTarget)) { ring.classList.remove('grow'); label.textContent = ''; }
-    });
-
-    $$('.magnetic').forEach(el => {
-      el.addEventListener('mousemove', e => {
-        const r = el.getBoundingClientRect();
-        el.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.2}px,${(e.clientY - r.top - r.height / 2) * 0.25}px)`;
-      });
-      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
-    });
-  }
-
-  /* ---------- 7. placeholders ---------- */
-  $$('.resume-link').forEach(el => el.addEventListener('click', e => {
-    e.preventDefault();
-    alert('Add your resume PDF link here.');
-  }));
-  $('#contactForm').addEventListener('submit', e => {
-    e.preventDefault();
-    alert('This is a static preview — connect a form service (e.g. Formspree) to receive messages.');
-  });
+  /* ---------- 6. back to top ---------- */
   $('#totop').addEventListener('click', () => scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }));
+
+  /* ---------- 7. contact form → Google Sheet (backend/contact-form.gs) ---------- */
+  const form = $('#contactForm');
+  const statusEl = $('.form-status', form);
+  const sendBtn = $('button[type="submit"]', form);
+  const sendLabel = $('.btn-label', sendBtn);
+
+  function setStatus(text, kind) {
+    statusEl.textContent = text;
+    statusEl.className = 'form-status' + (kind ? ' is-' + kind : '');
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (form.classList.contains('sending')) return;
+
+    // Highlight the first empty/invalid field instead of the browser's default bubble
+    const bad = $$('input[required], textarea[required]', form).find(f => !f.value.trim() || !f.checkValidity());
+    $$('.form-field', form).forEach(f => f.classList.remove('invalid'));
+    if (bad) {
+      bad.closest('.form-field').classList.add('invalid');
+      bad.focus();
+      return setStatus(bad.type === 'email' && bad.value.trim() ? 'Please check your email address.' : 'Please fill in every field.', 'error');
+    }
+
+    const endpoint = form.dataset.endpoint;
+    if (!endpoint) return setStatus('The contact form isn’t connected yet. Please email me directly.', 'error');
+
+    const data = new URLSearchParams(new FormData(form));
+    data.set('page', location.href);
+
+    form.classList.add('sending');
+    sendBtn.disabled = true;
+    sendLabel.textContent = 'Sending…';
+    setStatus('');
+    try {
+      // URL-encoded body = "simple" request, so Apps Script answers without a CORS preflight
+      const res = await fetch(endpoint, { method: 'POST', body: data });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || 'Request failed');
+      form.reset();
+      form.classList.add('sent');
+      setStatus('Thanks! Your message is in. I’ll get back to you soon.', 'ok');
+    } catch (err) {
+      setStatus(err.message && err.message !== 'Request failed' && !/fetch/i.test(err.message)
+        ? err.message
+        : 'Couldn’t send right now. Please try again, or email me directly.', 'error');
+    } finally {
+      form.classList.remove('sending');
+      sendBtn.disabled = false;
+      sendLabel.textContent = 'Send Message';
+    }
+  });
+  form.addEventListener('input', e => {
+    e.target.closest('.form-field')?.classList.remove('invalid');
+    form.classList.remove('sent');
+  });
 })();

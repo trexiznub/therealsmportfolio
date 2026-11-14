@@ -3,397 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0B0C0A">
+<meta name="theme-color" content="#050505">
 <script>document.documentElement.className+=" js"</script>
-<title>Ujwal Raj K. P — AI, Sustainability & Business Analytics</title>
+<title>Ujwal Raj K. P — AI, Sustainability &amp; Business Analytics</title>
 <meta name="description" content="Portfolio of Ujwal Raj K. P — MBA Sustainability Management candidate working across AI, ESG, and business analytics.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23050505'/%3E%3Ctext x='50' y='66' font-size='44' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='%23FFFFFF'%3EUJ%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Fonts load without blocking first paint; main.js waits for them (max 1.5s) before the text intro -->
-<link id="gfonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500..900&family=Inter:wght@400..600&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500..900&family=Inter:wght@400..600&display=swap"></noscript>
-<!-- Start downloading the hero portrait immediately (picks the same size the <img> will) -->
-<link rel="preload" as="image" type="image/avif" fetchpriority="high" imagesrcset="images/ujwal-480.avif 480w, images/ujwal-960.avif 960w" imagesizes="(max-width:900px) 78vw, 31vw">
+<!-- DM Sans everywhere; the system font shows until it arrives -->
+<link id="gfonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400..700&display=swap"></noscript>
+<link rel="preload" as="image" type="image/avif" fetchpriority="high" imagesrcset="images/hero-520.avif 520w, images/hero-1040.avif 1040w" imagesizes="(max-width:700px) 92vw, 520px">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<div id="grain"></div>
-<div id="cursor-ring"><span></span></div>
-<div id="cursor-dot"></div>
-
-<div id="progress"></div>
-
-<nav id="nav" aria-label="Primary">
-  <div class="container navwrap">
-    <div class="logo"><span></span>UJ</div>
-    <div class="navlinks" id="navlinks">
-      <a href="#home" class="active">Home</a>
-      <a href="#about">About</a>
-      <a href="#experience">Experience</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#leadership">Leadership</a>
-      <a href="#certifications">Certifications</a>
-      <a href="#contact">Contact</a>
-    </div>
-    <a href="#contact" class="navcta" id="navctaDesktop">Get in touch</a>
-    <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobilemenu"><span></span><span></span><span></span></button>
-  </div>
-</nav>
-
-<div id="mobilemenu">
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#experience">Experience</a>
-  <a href="#projects">Projects</a>
-  <a href="#skills">Skills</a>
-  <a href="#leadership">Leadership</a>
-  <a href="#certifications">Certifications</a>
-  <a href="#contact">Contact</a>
+<div id="loader" aria-hidden="true">
+  <div class="ld-mark">UJ</div>
+  <div class="ld-hello"><span>Hello</span><span>Namaste</span><span>Welcome</span></div>
+  <div class="ld-foot"><span>Ujwal Raj K. P — Portfolio</span><b id="ldPct">0</b></div>
+  <div class="ld-bar"><i id="ldBar"></i></div>
 </div>
+<div id="progress"></div>
+<nav id="nav" aria-label="Primary">
+  <a class="logo" href="#home" aria-label="Home">UJ</a>
+  <div class="navlinks" id="navlinks"><a href="#work">Work</a><a href="#about">About</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div>
+  <a href="#contact" class="btn btn-white nav-cta">Let's talk</a>
+  <button class="hamburger" id="hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobilemenu"><span></span><span></span></button>
+</nav>
+<div id="mobilemenu"><a href="#work">Work</a><a href="#about">About</a><a href="#experience">Experience</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div>
 
 <main id="top">
 <header class="hero" id="home">
   <div class="container hero-inner">
-
-    <div class="hero-topbar">
-      <div class="hero-mark">
-        <svg viewBox="0 0 40 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 4 C2 16 2 22 8 22 C13 22 13 14 13 10 C13 14 13 22 19 22 C24 22 24 16 24 4" stroke="#EDE3CF" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M27 4 C27 16 27 22 33 22 C38 22 38 14 38 10" stroke="#EDE3CF" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
-        </svg>
-        <div class="hero-mark-tag"><b>AI</b> × <b>SUSTAINABILITY</b> × <b>IMPACT</b></div>
-      </div>
-      <div class="hero-meta">
-        <div class="line1">MBA SUSTAINABILITY MANAGEMENT</div>
-        <div class="rule"></div>
-        <div class="vals">LEARN<br>BUILD<br>CONTRIBUTE</div>
-      </div>
+    <p class="badge hi"><span class="dot"></span>Available for Internships &amp; Full-time Roles</p>
+    <h1 class="hero-title" aria-label="Ujwal Raj K. P. — AI, sustainability and analytics."><span class="line"><span>Ujwal Raj K. P.</span></span><span class="line dim"><span>AI, sustainability &amp; analytics.</span></span></h1>
+    <p class="hero-lead hi"><b>Where business, technology and sustainability come together.</b> Exploring how data, technology and sustainable business strategies can solve real-world energy and environmental challenges.</p>
+    <div class="hero-ctas hi">
+      <a href="#work" class="btn btn-white">View My Work</a>
+      <a href="resume/Ujwal-Raj-KP-Resume.pdf" class="btn btn-glass" download>Download Resume<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11L12 15.5 16.5 11M5 20h14"/></svg></a>
     </div>
-
-    <div class="hero-stage">
-      <div class="hero-word" aria-hidden="true"><span>UJWAL</span></div>
-      <div class="hero-fig" id="heroFig">
-        <div class="hero-photo-wrap" id="heroPhoto">
-          <!-- 1KB inline blur placeholder: shows instantly, before any network request finishes -->
-          <div class="hero-lqip" aria-hidden="true" style="background-image:url(data:image/webp;base64,UklGRgIDAABXRUJQVlA4WAoAAAAQAAAAGwAAGwAAQUxQSD0BAAARkLNtm2m7E3q/WevsM8eI7d5Gm5RObdt1ajs/IKlsp7J627bXrPneYK09KyImoNHm11pBXFNjy2wsodw2XWpRdslmiWDCpW/JqwOjAMmxOREWM3t3yYQIKp77RFXThNMRB9U8p5Kk8ycRBSDCLrr/PO8YSECM1Vkpz4hB0KwM1Z+9EYXNzvIf+8OEGJxkSpKO2xCHXctbWMQiepLKyTVGQmBwiilVP1RDEGZ6fVdN+b4lKoyEiIke0ZMr97YHEMWRlGEqMUad/zFpNG+sGmoBQLJMDLRdkjguwT1P8v7OeSNboOo/AbptePfjF3l9Jb13SpLPuscWIhiw/hNzlSS9c7+5BhYGW0g6VZKqzE39OWOBbtREGax82toajGXKIpWTbITldIV4nrUGOwoiaQVHmRZVCVwrrsk2vaAvCgBWUDggngEAAFAHAJ0BKhwAHAA+tVKiTSckIyIoCADgFoliAMcAElb9XV0M7P0B7BP6v7pmG0Y+aloXU8kFxebMFaKvH0gYZ+y+/gAA/vJAtceqHtqTA52g5FLeZfSsui+6fXiwaiQaNk6fP1QVQVMsiiFlDVblaTPBV20qKEYs3j7gYFvUtSDVJE0u/+grB8zwr9kxuqXOOt/PEO1Xw0iDeW1C/P2bOQw787Gzs1IIrMX3PDP5i4UjKv/1h/3zU33jaI5L1F3zGhesrDCNhJQlXEEs0HRt3B4stDtGQ3AbRVselHUaL2zby/Kr3zgwd38ZZThwdzH6dpHYThdJqcGiNbT55trxJPVj0sXfP37ocigQXRV/7MlUx7hVxfcJBQ1v+9OY77iMfE3hqa3jmne0yJdbHLDxGTbGphV7uq9/sLvr3ung5cB5ZDJPPLPzWt/yT85grzu1w9JH30SNTs9DV+wHP8W2dLefcKrnj0sr/+Xe8TNZem2wBnKS/75M/8jl3oENlmdYpj69lwhEhrKJ/6M0sEIfYFmzhIV+CIAyZHqDVPPIAA==)"></div>
-          <picture>
-            <source type="image/avif" srcset="images/ujwal-480.avif 480w, images/ujwal-960.avif 960w" sizes="(max-width:900px) 78vw, 31vw">
-            <img class="hero-photo" src="images/ujwal-960.webp" srcset="images/ujwal-480.webp 480w, images/ujwal-960.webp 960w, images/ujwal.webp 1254w" sizes="(max-width:900px) 78vw, 31vw" width="960" height="960" alt="Ujwal Raj K. P" fetchpriority="high" decoding="async">
-          </picture>
-          <div class="hero-light" aria-hidden="true"></div>
-          <div class="hero-scan" aria-hidden="true"></div>
-          <i class="crop tl" aria-hidden="true"></i><i class="crop tr" aria-hidden="true"></i><i class="crop bl" aria-hidden="true"></i><i class="crop br" aria-hidden="true"></i>
-        </div>
+    <div class="stage hi" id="heroFig">
+      <div class="stage-bar"><i></i><i></i><i></i><span>Ujwal Raj K. P — Portfolio 2026</span></div>
+      <div class="stage-light" aria-hidden="true"></div>
+      <div class="stage-photo">
+        <div class="hero-lqip" aria-hidden="true" style="background-image:url(data:image/webp;base64,UklGRqoCAABXRUJQVlA4WAoAAAAQAAAAGwAAGwAAQUxQSDsBAAARkLNtm2m7I3q/NXN8Tjo7VVrbtm0nVVKlS1obla3KaW2jdefK+r6Zt9iYlYiYABTPgE4j+jcFBOmCydeV/HR8ECTJYRbJSJKbkKVkeBj+koxq7AmXIHjIwEKNW+ATPNZQi1i8DJc0g1ZEuQc+wWEQQ0Hk+yaQpK6MBcY7dVmKx3pqAY2z4JNOlAgcB5fgsDoURH5b0UgkAQ5naaTxBnLMpP3nGKnciypJgsdhKqO9GA44n0lZUuFv0Gi/wo/JNQDgvBQTByxkoP7++5N8d2ZphwoUzzxQN++dBYb4I8ZI0l5eWNdYBALUr3rNov/+kgxmJHkRTtBxxzvSYkHpGFStLaTlV9IC040jgZX8HZmnci1wICpzDXzicIWWD2PsW/WSIafAaY2/BAv5apjUkf9xWu8njx4/yvfh40EAVlA4IEgBAADwBgCdASocABwAPrVOm0mnJKIhMBgMAOAWiWQAstLwEfobhkWYNoxyUT5BHGlPekzcl8pDofHNy4+lawtjk3iAAP7r/qfQpE7RfYDnCkDl3gcJ1aD4eTEdOgxv2/pBkhPLi2KGX6/SX6W+Y6NBCnOK44efiIZUfUS9z3Xey0xplIdMqE1ss/TuudpYToQBZChA9BeCOu3OeL54/ErOhFlt+m+Sn+7fguNvabl0hRrjmP1b/295ukcdQFUtj9csKC5le8amJ2QitU2g2dPZwkkl/klBNEwJd79rlb95qjutsoedlj54tJObHEbtq0DuZlfbhwtbmhKhKTpCA6tMudtVr0vRtFPIdue5FpXcofJZtG2WZ4D41un9cAmjTkptOy5kvjEm7lN/JA2Osa+/ijmnqeRE/GB8T9gx30zQcgf67AY6sJDnhgAA)"></div>
+        <picture>
+          <source type="image/avif" srcset="images/hero-520.avif 520w, images/hero-1040.avif 1040w" sizes="(max-width:700px) 92vw, 520px">
+          <img class="hero-photo" src="images/hero-1040.webp" srcset="images/hero-520.webp 520w, images/hero-1040.webp 1040w" sizes="(max-width:700px) 92vw, 520px" width="1040" height="1070" alt="Ujwal Raj K. P" fetchpriority="high" decoding="async">
+        </picture>
       </div>
-      <div class="hero-scroll">
-        <span class="word">SCROLL</span>
-        <span class="stick"></span>
-        <span class="dot"></span>
-      </div>
+      <p class="stage-note tl"><b>MBA — Sustainability Management</b>SIIB Pune (2026 – 2028)</p>
+      <p class="stage-note tr"><b>Pune, India</b>SIIB Pune – MBA SM</p>
     </div>
-
-    <div class="hero-bottom">
-      <div class="hero-text">
-        <div class="hero-id">
-          <h1 class="hero-name">Ujwal Raj K. P</h1>
-          <p class="hero-role">MBA Sustainability Management</p>
-          <p class="hero-focus"><b>AI</b> &nbsp;|&nbsp; <b>SUSTAINABILITY</b> &nbsp;|&nbsp; <b>BUSINESS ANALYTICS</b></p>
-        </div>
-        <div class="hero-act">
-          <div class="hero-badge"><span class="dot"></span>Available for internships &amp; full-time roles</div>
-          <div class="hero-ctas">
-            <a href="#projects" class="btn btn-primary magnetic"><span>View Projects</span> <span class="btn-arrow">→</span></a>
-            <a href="#" class="btn btn-ghost magnetic resume-link"><span>Download Resume</span></a>
-          </div>
-        </div>
-      </div>
-      <div class="hero-right-tag">
-        <div><span class="rule"></span>TURN IDEAS</div>
-        <div class="indent">INTO IMPACT</div>
-      </div>
-    </div>
-
   </div>
+  <div class="marquee" aria-label="Quick Highlights"><ul><li>Renewable Energy</li><li>ESG &amp; Sustainability</li><li>Data &amp; Business Analytics</li><li>AI &amp; Automation</li><li>Project &amp; Team Leadership</li></ul></div>
 </header>
+
+<section id="numbers" class="tight">
+  <div class="container"><div class="stats"><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div class="num" data-count="15" data-suffix="+">15+</div><div class="label">Months of professional experience</div></div><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h5"/></svg><div class="num" data-count="50" data-suffix="+">50+</div><div class="label">EHS compliance documents managed</div></div><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M15.5 14.3c3 0 5.5 2 5.5 5"/></svg><div class="num" data-count="20" data-suffix="+">20+</div><div class="label">Technicians coordinated on-site</div></div><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg><div class="num" data-count="6000" data-suffix="+">6,000+</div><div class="label">Customer records analysed</div></div><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l4-4 4 3 3-3 7 6"/><path d="M3 12l5 5 3-2 3 2 7-3"/></svg><div class="num" data-count="12" data-prefix="AED " data-suffix="K">AED 12K</div><div class="label">Largest B2B deal closed</div></div><div class="stat"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg><div class="num" data-count="5" data-suffix="+">5+</div><div class="label">Business dashboards built</div></div></div></div>
+</section>
+
+<section id="work">
+  <div class="container">
+    <p class="label-row reveal"><span>Featured work</span></p>
+    <h2 class="sec-title reveal">Building the tools I wish existed.</h2>
+    <p class="sec-sub reveal">A growing collection — starting with a forecasting tool built for real sales data, with more in progress.</p>
+    <div class="work-grid">
+      <article class="work-card reveal">
+        <div class="work-visual"><canvas class="model" data-model="spark" data-drag aria-hidden="true"></canvas><span class="hint">Drag to rotate</span></div>
+        <div class="work-body">
+          <h3>SPARK AI</h3>
+          <p class="ptag">RAG-based AI voice assistant</p>
+          <p class="stack">Python, Streamlit, RAG, LLMs, vector search</p>
+          <details>
+            <summary>Project details</summary>
+            <dl><dt>Problem</dt><dd>Traditional AI assistants often lack contextual understanding and reliable access to specific knowledge.</dd><dt>Solution</dt><dd>Built a voice-enabled assistant using Retrieval-Augmented Generation to retrieve relevant information and generate contextual responses.</dd><dt>Tech stack</dt><dd>Python, Streamlit, RAG, LLMs, vector search</dd><dt>Outcome</dt><dd>An interactive voice assistant capable of answering queries using retrieved knowledge.</dd></dl>
+          </details>
+          <div class="work-links"><a href="https://github.com/trexiznub/RAG-Voice-Assistant-.git" target="_blank" rel="noopener" class="tlink">GitHub<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a><a href="#" class="tlink">Live Demo</a></div>
+        </div>
+      </article>
+      <article class="work-card reveal">
+        <div class="work-visual"><canvas class="model" data-model="esg" data-drag aria-hidden="true"></canvas><span class="hint">Drag to rotate</span></div>
+        <div class="work-body">
+          <h3>ESG Intelligence Agent</h3>
+          <p class="ptag">AI-powered ESG research and intelligence</p>
+          <p class="stack">Python, AI, NLP, RAG</p>
+          <details>
+            <summary>Project details</summary>
+            <dl><dt>Problem</dt><dd>ESG research involves analysing large volumes of sustainability information, reports and regulatory disclosures.</dd><dt>Solution</dt><dd>Developed an AI-powered agent to retrieve, process and analyse ESG-related information.</dd><dt>Tech stack</dt><dd>Python, AI, NLP, RAG</dd><dt>Outcome</dt><dd>A streamlined approach to accessing and interpreting ESG intelligence.</dd></dl>
+          </details>
+          <div class="work-links"><a href="https://github.com/trexiznub/esg-intelligence-agent.git" target="_blank" rel="noopener" class="tlink">GitHub<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a><a href="https://trexiznub.github.io/esg-intelligence-agent/" target="_blank" rel="noopener" class="tlink">Live Demo<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a></div>
+        </div>
+      </article>
+      <article class="work-card reveal">
+        <div class="work-visual"><canvas class="model" data-model="renew" data-drag aria-hidden="true"></canvas><span class="hint">Drag to rotate</span></div>
+        <div class="work-body">
+          <h3>RenewEdge AI</h3>
+          <p class="ptag">AI-driven renewable energy innovation</p>
+          <p class="stack">AI, Python, Data Analytics</p>
+          <details>
+            <summary>Project details</summary>
+            <dl><dt>Problem</dt><dd>Renewable energy projects involve complex data and decisions around generation, performance and sustainability.</dd><dt>Solution</dt><dd>Exploring the application of AI and data-driven approaches to support renewable energy analysis and decision-making.</dd><dt>Tech stack</dt><dd>AI, Python, Data Analytics</dd><dt>Outcome</dt><dd>An ongoing project exploring the intersection of artificial intelligence and renewable energy.</dd></dl>
+          </details>
+          <div class="work-links"><a href="#" class="tlink">Work in Progress</a><a href="#" class="tlink">Coming soon</a></div>
+        </div>
+      </article>
+    </div>
+    <p class="next reveal"><span class="plus">+</span>Next project in progress — Check back soon</p>
+  </div>
+</section>
 
 <section id="about">
   <div class="container">
-    <p class="eyebrow reveal">About</p>
-    <h2 class="sec-title reveal">Where sustainability strategy meets applied AI.</h2>
+    <p class="label-row reveal"><span>About me</span></p>
     <div class="about-grid">
-  
-<div class="about-portrait reveal">
-    
-<img
-    src="images/about-portrait.jpg"
-    alt="Ujwal on a mountain trekking expedition"
-    loading="lazy"
-    decoding="async"
->
-
-
-    <div class="about-photo-label">
-        UJWAL RAJ K. P
-        <span>AI × SUSTAINABILITY × IMPACT</span>
-    </div>
-</div>
-
+      <div class="about-photo reveal"><img src="images/about-portrait-1100.webp" srcset="images/about-portrait-600.webp 600w, images/about-portrait-1100.webp 1100w" sizes="(max-width:900px) 90vw, 36vw" alt="Ujwal Raj K. P" width="1100" height="1467" loading="lazy" decoding="async"></div>
       <div class="about-body">
-
-<p class="reveal">
-    I'm an MBA candidate in Sustainability Management at Symbiosis Institute of International Business, Pune, with an undergraduate background in Computer Science and Engineering (AI &amp; ML).
-</p>
-
-<p class="reveal">
-    I work at the intersection of technology, business and sustainability, exploring how data, analytical thinking and emerging technologies can address real-world business and environmental challenges. My experience spans wind energy operations, EHS compliance, business development and data analytics. From coordinating field teams and managing compliance documentation to analysing customer data and building dashboards, I enjoy turning complex information into actionable insights and practical business decisions.
-</p>
-
-        <div class="about-tags reveal">
-          <span class="tag"> Renewable Energy</span>
-          <span class="tag">Business &amp; Data Analytics</span>
-          <span class="tag">AI &amp; Machine Learning</span>
-          <span class="tag">ESG & Sustainability</span>
-          <span class="tag">Strategic Analysis</span>
-          <span class="tag">Project & Team Coordination</span>
-        </div>
-        <div class="stats-grid reveal">
-          <div class="stat"><div class="num" data-count="15" data-suffix="+">0</div><div class="label">Months of professional experience</div></div>
-          <div class="stat"><div class="num" data-count="50" data-suffix="+">0</div><div class="label">EHS compliance documents managed</div></div>
-          <div class="stat"><div class="num" data-count="20" data-suffix="+">0</div><div class="label">Technicians coordinated on-site</div></div>
-          <div class="stat"><div class="num" data-count="6000" data-suffix="+">0</div><div class="label">Customer records analysed</div></div>
-          <div class="stat"><div class="num" data-count="12" data-prefix="AED " data-suffix="K">0</div><div class="label">Largest B2B deal closed</div></div>
-          <div class="stat"><div class="num" data-count="5" data-suffix="+">0</div><div class="label">Business dashboards built</div></div>
-        </div>
+        <h2 class="sec-title reveal">Where sustainability strategy meets applied AI.</h2>
+        <p class="reveal">I'm an MBA candidate in Sustainability Management at Symbiosis Institute of International Business, Pune, with an undergraduate background in Computer Science and Engineering (AI &amp; ML).</p>
+        <p class="reveal">I work at the intersection of technology, business and sustainability, exploring how data, analytical thinking and emerging technologies can address real-world business and environmental challenges.</p>
+        <p class="reveal">My experience spans wind energy operations, EHS compliance, business development and data analytics — from coordinating field teams and managing compliance documentation to analysing customer data and building dashboards that drive actionable business decisions.</p>
+        <div class="tags reveal"><span>Renewable Energy</span><span>Business &amp; Data Analytics</span><span>AI &amp; Machine Learning</span><span>ESG &amp; Sustainability</span><span>Strategic Analysis</span><span>Project &amp; Team Coordination</span></div>
       </div>
-    </div>
+    </div> 
   </div>
 </section>
 
 <section id="experience">
   <div class="container">
-    <p class="eyebrow reveal">Experience</p>
+    <p class="label-row reveal"><span>Experience</span></p>
     <h2 class="sec-title reveal">A path through operations, sales, and analytics.</h2>
     <p class="sec-sub reveal">Three roles, three very different rooms — a wind farm site office, a sales floor, and a newsroom analytics desk — each one sharpening a different part of how I work today.</p>
-    <div class="timeline">
-      <div class="tl-item reveal">
-        <div class="tl-dot"></div>
-        <div class="tl-period">Crown Enterprises</div>
-        <h3 class="tl-role">Technical Coordinator</h3>
-        <p class="tl-org">Wind energy field operations · GE Vernova DCP</p>
-        <div class="badges">
-          <span class="badge">Workforce coordination</span>
-          <span class="badge">EHS compliance</span>
-          <span class="badge">Wind energy operations</span>
-          <span class="badge">Project planning</span>
-          <span class="badge">Stakeholder management</span>
-        </div>
-      </div>
-      <div class="tl-item reveal">
-        <div class="tl-dot"></div>
-        <div class="tl-period">Learners Point Academy</div>
-        <h3 class="tl-role">Business Development Executive</h3>
-        <p class="tl-org">Consultative B2B and B2C sales</p>
-        <div class="badges">
-          <span class="badge">AED 7,800 avg. monthly sales</span>
-          <span class="badge">AED 12,000 B2B deal closed</span>
-          <span class="badge">CRM management</span>
-          <span class="badge">Consultative selling</span>
-        </div>
-      </div>
-      <div class="tl-item reveal">
-        <div class="tl-dot"></div>
-        <div class="tl-period">Outlook Publications</div>
-        <h3 class="tl-role">Business Analyst Intern</h3>
-        <p class="tl-org">Revenue &amp; customer analytics</p>
-        <div class="badges">
-          <span class="badge">Power BI dashboards</span>
-          <span class="badge">Customer analytics</span>
-          <span class="badge">Revenue forecasting</span>
-          <span class="badge">Revenue generation</span>
-        </div>
-      </div>
+    <div class="steps panel">
+      <article class="step reveal">
+        <p class="step-n"><span>01</span>Crown Enterprises</p>
+        <h3>Technical Coordinator</h3>
+        <p class="step-org">Wind energy field operations · GE Vernova DCP</p>
+        <ul><li>Workforce coordination</li><li>EHS compliance</li><li>Wind energy operations</li><li>Project planning</li><li>Stakeholder management</li></ul>
+      </article>
+      <article class="step reveal">
+        <p class="step-n"><span>02</span>Learners Point Academy</p>
+        <h3>Business Development Executive</h3>
+        <p class="step-org">Consultative B2B and B2C sales</p>
+        <ul><li>AED 7,800 avg. monthly sales</li><li>AED 12,000 B2B deal closed</li><li>CRM management</li><li>Consultative selling</li></ul>
+      </article>
+      <article class="step reveal">
+        <p class="step-n"><span>03</span>Outlook Publications</p>
+        <h3>Business Analyst Intern</h3>
+        <p class="step-org">Revenue &amp; customer analytics</p>
+        <ul><li>Power BI dashboards</li><li>Customer analytics</li><li>Revenue forecasting</li><li>Revenue generation</li></ul>
+      </article>
     </div>
   </div>
 </section>
-
-
-<section id="projects">
-  <div class="container">
-    <p class="eyebrow reveal">Projects</p>
-
-    <h2 class="sec-title reveal">Building the tools I wish existed.</h2>
-
-    <p class="sec-sub reveal">
-      A growing collection of experiments at the intersection of AI,
-      technology and real-world problem solving.
-    </p>
-
-    <div class="project-grid" id="projectGrid">
-
-      <!-- SPARK AI -->
-      <div class="project-card reveal" data-cursor-label="View">
-
-        <div class="project-visual">
-          <span class="mark">SPARK</span>
-        </div>
-
-        <div class="project-body">
-          <h3>SPARK AI</h3>
-
-          <p class="ptag">
-            RAG Voice Assistant · Artificial Intelligence
-          </p>
-
-          <div class="project-cols">
-
-            <div>
-              <div class="k">Problem</div>
-              <div class="v">
-                Traditional text-based interactions can make AI
-                less natural and accessible for everyday use.
-              </div>
-            </div>
-
-            <div>
-              <div class="k">Solution</div>
-              <div class="v">
-                A modular voice assistant combining speech
-                transcription, AI-generated responses and
-                text-to-speech capabilities.
-              </div>
-            </div>
-
-            <div>
-              <div class="k">Tech stack</div>
-              <div class="v">
-                Python, OpenAI, Groq, Deepgram, ElevenLabs,
-                Cartesia AI, Ollama and Streamlit.
-              </div>
-            </div>
-
-            <div>
-              <div class="k">Key features</div>
-              <div class="v">
-                Multiple AI providers, configurable voice
-                services and support for local models.
-              </div>
-            </div>
-
-          </div>
-
-          <div class="project-actions">
-            <a
-              href="https://github.com/nitesh-77/RAG-Voice-Assistant-"
-              class="btn btn-ghost"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              GitHub ↗
-            </a>
-          </div>
-
-        </div>
-      </div>
-
-<!-- ESG INTELLIGENCE AGENT -->
-<div class="project-card reveal" data-cursor-label="View">
-
-  <div class="project-visual">
-    <span class="mark">ESG / AI</span>
-  </div>
-
-  <div class="project-body">
-    <h3>ESG INTELLIGENCE AGENT</h3>
-
-    <p class="ptag">
-      Artificial Intelligence · ESG Analytics · Sustainability
-    </p>
-
-    <div class="project-cols">
-
-      <div>
-        <div class="k">Problem</div>
-        <div class="v">
-          ESG research and sustainability analysis can involve
-          fragmented information, time-consuming evaluation
-          and complex reporting workflows.
-        </div>
-      </div>
-
-      <div>
-        <div class="k">Solution</div>
-        <div class="v">
-          An AI-powered intelligence tool designed to analyse
-          sustainability-related information and generate
-          structured ESG insights.
-        </div>
-      </div>
-
-      <div>
-        <div class="k">Tech stack</div>
-        <div class="v">
-          Python, AI/LLMs, data analysis and visualisation.
-        </div>
-      </div>
-
-      <div>
-        <div class="k">Key features</div>
-        <div class="v">
-          Structured ESG outputs, visual insights and
-          downloadable PDF reports.
-        </div>
-      </div>
-
-    </div>
-
-
-<div class="project-actions">
-  <a
-    href="https://github.com/trexiznub/esg-intelligence-agent"
-    class="btn btn-ghost"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    GitHub ↗
-  </a>
-
-  <a
-    href="https://trexiznub.github.io/esg-intelligence-agent/"
-    class="btn btn-ghost"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Live Demo ↗
-  </a>
-  </div> <!-- closes project-body -->
-
-</div> <!-- closes ESG project-card -->
-</div>
-<!-- UPCOMING PROJECT -->
-<div class="project-card placeholder reveal">
-        <div class="ph">
-          <span class="plus">+</span>
-          Next project in progress
-          <br>
-          Check back soon
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 
 <section id="skills">
   <div class="container">
-    <p class="eyebrow reveal">Skills</p>
+    <p class="label-row reveal"><span>Skills</span></p>
     <h2 class="sec-title reveal">The toolkit behind the work.</h2>
     <div class="skills-cols">
       <div class="skill-cat reveal">
-        <h4>Technical</h4>
+        <h3>Technical</h3>
         <div class="skill-row"><div class="top"><span>Power BI</span><span>90%</span></div><div class="bar"><span data-w="90"></span></div></div>
         <div class="skill-row"><div class="top"><span>Python</span><span>75%</span></div><div class="bar"><span data-w="75"></span></div></div>
         <div class="skill-row"><div class="top"><span>Business Analytics</span><span>88%</span></div><div class="bar"><span data-w="88"></span></div></div>
@@ -401,7 +171,7 @@
         <div class="skill-row"><div class="top"><span>Microsoft Office</span><span>92%</span></div><div class="bar"><span data-w="92"></span></div></div>
       </div>
       <div class="skill-cat reveal">
-        <h4>Management</h4>
+        <h3>Management</h3>
         <div class="skill-row"><div class="top"><span>Leadership</span><span>90%</span></div><div class="bar"><span data-w="90"></span></div></div>
         <div class="skill-row"><div class="top"><span>Stakeholder Management</span><span>88%</span></div><div class="bar"><span data-w="88"></span></div></div>
         <div class="skill-row"><div class="top"><span>Team Management</span><span>85%</span></div><div class="bar"><span data-w="85"></span></div></div>
@@ -409,7 +179,7 @@
         <div class="skill-row"><div class="top"><span>Problem Solving</span><span>90%</span></div><div class="bar"><span data-w="90"></span></div></div>
       </div>
       <div class="skill-cat reveal">
-        <h4>Soft skills</h4>
+        <h3>Soft skills</h3>
         <div class="skill-row"><div class="top"><span>Communication</span><span>90%</span></div><div class="bar"><span data-w="90"></span></div></div>
         <div class="skill-row"><div class="top"><span>Networking</span><span>85%</span></div><div class="bar"><span data-w="85"></span></div></div>
         <div class="skill-row"><div class="top"><span>Critical Thinking</span><span>88%</span></div><div class="bar"><span data-w="88"></span></div></div>
@@ -420,20 +190,28 @@
   </div>
 </section>
 
-<section id="certifications">
-  <div class="container">
-    <p class="eyebrow reveal">Certifications</p>
-    <h2 class="sec-title reveal">Formal ground beneath the practical work.</h2>
-    <div class="cert-grid">
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
-        <h4>Microsoft Azure AI Fundamentals</h4>
-        <p>Foundational certification covering core AI and machine learning concepts on Azure.</p>
+<section id="credentials">
+  <div class="container cred-grid">
+    <div id="education">
+      <p class="label-row reveal"><span>Education</span></p>
+      <h2 class="sec-title sm reveal">Academic foundation.</h2>
+      <div class="panel list reveal">
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg><div><h3>MBA, Sustainability Management</h3><p>Symbiosis Institute of International Business (SIIB) · SIIB Pune | 2026 – 2028</p></div><span class="chip live">In progress</span></div>
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg><div><h3>B.Tech, Computer Science (AI &amp; ML)</h3><p>REVA University · CGPA: 8.02</p></div><span class="chip">Completed</span></div>
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg><div><h3>Class XII</h3><p>Jain PU College</p></div><span class="chip">Completed</span></div>
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/></svg><div><h3>Class X</h3><p>Maruthi Vidya Kendra</p></div><span class="chip">Completed</span></div>
       </div>
-      <div class="cert-card reveal">
-        <div class="cert-icon">◆</div>
-        <h4>CSRD Fundamentals, Level 1</h4>
-        <p>Grounding in the EU Corporate Sustainability Reporting Directive and ESG disclosure standards.</p>
+    </div>
+    <div id="certifications">
+      <p class="label-row reveal"><span>Certifications</span></p>
+      <h2 class="sec-title sm reveal">Formal ground beneath the practical work.</h2>
+      <div class="panel list reveal">
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L7.5 21l4.5-2.5 4.5 2.5-1.5-7.5"/></svg><div><h3>Microsoft Azure AI Fundamentals</h3><p>Foundational certification covering core AI and machine learning concepts on Azure.</p></div></div>
+        <div class="list-row"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L7.5 21l4.5-2.5 4.5 2.5-1.5-7.5"/></svg><div><h3>CSRD Fundamentals, Level 1</h3><p>Grounding in the EU Corporate Sustainability Reporting Directive and ESG disclosure standards.</p></div></div>
+      </div>
+      <div class="panel award reveal" id="achievement">
+        <div><p class="panel-label">Achievement</p><h3>Karnataka SSP Scholarship</h3><p>Awarded to the top 15% of applicants statewide</p></div>
+        <div class="award-side"><b>₹1.08L</b><span>Scholarship value</span></div>
       </div>
     </div>
   </div>
@@ -441,64 +219,32 @@
 
 <section id="leadership">
   <div class="container">
-    <p class="eyebrow reveal">Leadership</p>
+    <p class="label-row reveal"><span>Leadership</span></p>
     <h2 class="sec-title reveal">Outside the classroom, still building.</h2>
     <div class="lead-grid">
-      <div class="lead-card reveal">
-        <p class="lead-org">SIIB</p>
-        <h4>PR &amp; Media Committee</h4>
-        <p>Managed external communications and media presence for institute events, shaping how the campus told its own story.</p>
-      </div>
-      <div class="lead-card reveal">
-        <p class="lead-org">FACIT</p>
-        <h4>Promotional Head</h4>
-        <p>Led promotional strategy and outreach for club initiatives, growing engagement across the student community.</p>
-      </div>
-      <div class="lead-card reveal">
-        <p class="lead-org">FACIT</p>
-        <h4>Technical Head</h4>
-        <p>Owned the technical delivery of club events and projects, from planning through execution.</p>
-      </div>
+      <div class="panel lead-card reveal"><p class="panel-label">SIIB</p><h3>PR &amp; Media Committee</h3><p>Managed external communications and media presence for institute events, shaping how the campus told its own story.</p></div>
+      <div class="panel lead-card reveal"><p class="panel-label">FACIT</p><h3>Promotional Head</h3><p>Led promotional strategy and outreach for club initiatives, growing engagement across the student community.</p></div>
+      <div class="panel lead-card reveal"><p class="panel-label">FACIT</p><h3>Technical Head</h3><p>Owned the technical delivery of club events and projects, from planning through execution.</p></div>
     </div>
   </div>
 </section>
 
-<section id="education">
+<section id="uj-moto">
   <div class="container">
-    <p class="eyebrow reveal">Education</p>
-    <h2 class="sec-title reveal">Academic foundation.</h2>
-    <div class="edu-list">
-      <div class="edu-row reveal">
-        <div class="left"><h4>MBA, Sustainability Management</h4><p>Symbiosis Institute of International Business (SIIB)</p></div>
-        <span class="chip">In progress</span>
+    <p class="label-row reveal"><span>Beyond the Professional</span></p>
+    <h2 class="sec-title reveal">Life beyond the screen.</h2>
+    <div class="moto panel reveal">
+      <div class="moto-copy">
+        <p class="panel-label">Creator / Motorcycle / Adventure</p>
+        <h3>UJ <span>MOTO.</span></h3>
+        <p>Not everything happens behind a desk. UJ Moto is where I document my journeys, motorcycle builds, mountain roads and the experiences that make every ride memorable.</p>
+        <p>From exploring the ghats to modifying my Himalayan 450, this is my creative space for storytelling through motorcycles, travel and cinematography.</p>
+        <div class="tags"><span>Motorcycling</span><span>Adventure</span><span>Travel Films</span><span>Photography</span></div>
+        <a href="https://www.youtube.com/@ujmoto3230" target="_blank" rel="noopener noreferrer" class="btn btn-white">Explore UJ Moto<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg></a>
       </div>
-      <div class="edu-row reveal">
-        <div class="left"><h4>B.Tech, Computer Science (AI &amp; ML)</h4><p>REVA University</p></div>
-        <span class="chip">Completed</span>
-      </div>
-      <div class="edu-row reveal">
-        <div class="left"><h4>Class XII</h4><p>Jain PU College</p></div>
-        <span class="chip">Completed</span>
-      </div>
-      <div class="edu-row reveal">
-        <div class="left"><h4>Class X</h4><p>Maruthi Vidya Kendra</p></div>
-        <span class="chip">Completed</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="achievement">
-  <div class="container">
-    <p class="eyebrow reveal">Achievement</p>
-    <div class="award-card reveal">
-      <div>
-        <div class="award-title">Karnataka SSP Scholarship</div>
-        <div class="award-label">Awarded to the top 15% of applicants statewide</div>
-      </div>
-      <div class="award-side">
-        <div class="award-num">₹1.08L</div>
-        <div class="award-label">Scholarship value</div>
+      <div class="moto-visual">
+        <img src="images/uj-moto-1100.webp" srcset="images/uj-moto-600.webp 600w, images/uj-moto-1100.webp 1100w" sizes="(max-width:900px) 90vw, 40vw" alt="UJ Moto Himalayan 450 adventure ride" width="1100" height="1467" loading="lazy" decoding="async">
+        <div class="moto-caption"><span>UJ MOTO</span><p>BUILT AROUND THE RIDE.</p></div>
       </div>
     </div>
   </div>
@@ -506,19 +252,26 @@
 
 <section id="contact">
   <div class="container">
-    <h2 class="contact-title reveal">Let's build something meaningful.</h2>
-    <p class="contact-sub reveal">Open to internships and full-time roles at the intersection of sustainability and analytics.</p>
+    <div class="cta reveal">
+      <h2 class="cta-title">Let's build something meaningful.</h2>
+      <p>Open to internships and full-time roles at the intersection of sustainability and analytics.</p>
+      <div class="orb"><canvas class="model" data-model="esg" data-drag data-big aria-label="Interactive 3D globe — drag to rotate" role="img"></canvas><span class="hint">Drag to rotate</span></div>
+    </div>
     <div class="contact-grid">
-      <form class="reveal" id="contactForm" onsubmit="return false;">
-        <div class="form-field"><label>Name</label><input type="text" placeholder="Your name" required></div>
-        <div class="form-field"><label>Email</label><input type="email" placeholder="you@email.com" required></div>
-        <div class="form-field"><label>Message</label><textarea rows="5" placeholder="What would you like to talk about?" required></textarea></div>
-        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+      <!-- Paste your Google Apps Script Web app URL into data-endpoint (see README → "Contact form database") -->
+      <form class="panel reveal" id="contactForm" data-endpoint="" novalidate>
+        <div class="form-field"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" placeholder="Your name" autocomplete="name" maxlength="100" required></div>
+        <div class="form-field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" placeholder="you@email.com" autocomplete="email" maxlength="200" required></div>
+        <div class="form-field"><label for="cf-message">Message</label><textarea id="cf-message" name="message" rows="5" placeholder="What would you like to talk about?" maxlength="5000" required></textarea></div>
+        <div class="form-hp" aria-hidden="true"><label for="cf-website">Website</label><input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <button type="submit" class="btn btn-white btn-block"><span class="btn-label">Send Message</span></button>
+        <p class="form-status" role="status" aria-live="polite"></p>
       </form>
-      <div class="contact-side reveal">
-        <div class="row"><div class="ic">✉</div><div><a href="mailto:ujwal@example.com">ujwal@example.com</a><div class="sub">Email</div></div></div>
-        <div class="row"><div class="ic">in</div><div><a href="#" target="_blank" rel="noopener">linkedin.com/in/ujwalrajkp</a><div class="sub">LinkedIn</div></div></div>
-        <div class="row"><div class="ic">↓</div><div><a href="#" class="resume-link">Download Resume</a><div class="sub">PDF, updated 2026</div></div></div>
+      <div class="panel contact-side reveal">
+        <a class="row" href="mailto:ujwalraj3103@gmail.com"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span><b>ujwalraj3103@gmail.com</b><i>Email</i></span></a>
+        <a class="row" href="https://www.linkedin.com/in/ujwal-raj-k-p" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg><span><b>linkedin.com/in/ujwal-raj-k-p</b><i>LinkedIn</i></span></a>
+        <a class="row" href="resume/Ujwal-Raj-KP-Resume.pdf" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 11L12 15.5 16.5 11M5 20h14"/></svg><span><b>Download Resume</b><i>PDF, updated 2026</i></span></a>
+        <p class="row static"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0113 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg><span><b>Pune, India</b><i>SIIB Pune – MBA SM</i></span></p>
       </div>
     </div>
   </div>
@@ -531,7 +284,7 @@
     <button id="totop" type="button" aria-label="Back to top">↑</button>
   </div>
 </footer>
-
+<script src="js/scene.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>
