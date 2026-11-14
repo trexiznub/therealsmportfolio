@@ -1,13 +1,14 @@
 /**
  * Portfolio contact form → Google Sheet
  *
- * Paste this whole file into the Apps Script editor of your Google Sheet
- * (Extensions → Apps Script), then deploy it as a Web app.
+ * Runs as a Google Apps Script web app (script.google.com) and writes into the
+ * Google Sheet whose ID is in SHEET_ID below.
  * Full steps: README.md → "Contact form database".
  *
  * Each message becomes one row: Time | Name | Email | Message | Page
  */
 
+const SHEET_ID = '1FM9UMlFjGYIoZicIrxJH3D5Mqu0sHjCn92lr0smcIyU';   // the "Portfolio messages" Google Sheet
 const SHEET_NAME = 'Messages';
 const NOTIFY_BY_EMAIL = true;       // email you a copy of every new message (set false to turn off)
 const LIMITS = { name: 100, email: 200, message: 5000 };
@@ -64,7 +65,7 @@ function doGet() {
 }
 
 function getSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
   if (sheet.getLastRow() === 0) {

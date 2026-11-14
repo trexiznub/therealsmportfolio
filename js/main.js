@@ -1,6 +1,6 @@
 /* =====================================================================
    main.js — page behaviour (3D models live in scene.js)
-   1 helpers  2 loading screen, welcome, photo stage  3 reveals  4 counters + bars
+   1 helpers  2 loading screen, welcome, photo card  3 reveals  4 counters + bars
    5 nav, progress, menu  6 back to top  7 contact form → Google Sheet
    ===================================================================== */
 (() => {
@@ -12,7 +12,7 @@
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   /* ---------- 2. loading screen + welcome ---------- */
-  // Progress follows real work: fonts and the hero portrait. The screen stays at least
+  // Progress follows real work: the fonts. The screen stays at least
   // ~2.4s on a first visit (so the greeting can play) and ~0.7s on repeat visits in the
   // same browser session; it never stays longer than 6s even on a very slow connection.
   $$('.hi').forEach((el, i) => el.style.setProperty('--d', 700 + i * 110 + 'ms'));
@@ -27,15 +27,17 @@
   const cssLoaded = !fontLink || fontLink.sheet ? Promise.resolve() : new Promise(r => {
     fontLink.addEventListener('load', r, { once: true }); fontLink.addEventListener('error', r, { once: true });
   });
-  const fonts = cssLoaded.then(() => document.fonts ? document.fonts.load('600 1em "DM Sans"').catch(() => {}) : null);
+  const fonts = cssLoaded.then(() => document.fonts ? Promise.all(['800 1em "Inter Tight"', '400 1em "Inter"'].map(f => document.fonts.load(f))).catch(() => {}) : null);
 
+  // The portrait sits below the first screen, so it loads lazily and fades in by itself.
   const fig = $('#heroFig'), photo = $('.hero-photo');
-  const photoReady = new Promise(res => {
-    if (!photo) return res();
-    const done = () => (photo.decode ? photo.decode().catch(() => {}) : Promise.resolve()).then(res);
+  if (photo) {
+    const sharp = () => fig.classList.add('is-sharp');
+    const done = () => (photo.decode ? photo.decode().catch(() => {}) : Promise.resolve()).then(sharp);
     if (photo.complete && photo.naturalWidth) done();
-    else { photo.addEventListener('load', done, { once: true }); photo.addEventListener('error', res, { once: true }); }
-  });
+    else { photo.addEventListener('load', done, { once: true }); photo.addEventListener('error', sharp, { once: true }); }
+  }
+  const photoReady = wait(0);
 
   let real = 0;
   [fonts, photoReady].forEach(p => p.then(() => { real += 0.5; }));
@@ -67,7 +69,6 @@
       finished = true;
       setTimeout(() => {
         root.classList.add('ready');          // loader wipes up, hero welcome animation starts
-        fig.classList.add('is-sharp');
         document.body.classList.remove('loading');
         setTimeout(() => { if (loader) loader.remove(); }, 1200);
       }, 180);
@@ -95,6 +96,12 @@
 
   // marquee: duplicate the list once so the loop is seamless
   $$('.marquee ul').forEach(ul => { ul.insertAdjacentHTML('beforeend', ul.innerHTML.replace(/<li>/g, '<li aria-hidden="true">')); });
+
+  // headline full stops in the accent colour
+  $$('.sec-title, .cta-title, .statement').forEach(h => {
+    const t = h.textContent.trim();
+    if (t.endsWith('.')) { h.textContent = t.slice(0, -1); const d = document.createElement('i'); d.className = 'dotx'; d.textContent = '.'; h.appendChild(d); }
+  });
 
   /* ---------- 3. reveals ---------- */
   const revealIO = new IntersectionObserver(entries => {
@@ -140,6 +147,8 @@
     nav.classList.toggle('hide', root.scrollTop > lastY && root.scrollTop > 500 && !menu.classList.contains('open'));
     lastY = root.scrollTop;
     stageIO();
+    const em = window.Scene3D && window.Scene3D.views.emblem;
+    if (em && root.scrollTop < innerHeight * 1.2) em.turn(root.scrollTop / innerHeight * 1.6);   // the emblem turns as you scroll away
   }
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
