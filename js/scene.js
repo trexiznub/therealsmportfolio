@@ -1,6 +1,7 @@
 /* =====================================================================
    scene.js — small dependency-free 3D mesh renderer (Canvas 2D)
    Models:
+     halo  → chrome ring with a green dot in orbit (hero, behind the portrait)
      logo  → the UJ emblem in chrome (ring + monoline U and J + accent dot)
      spark → twisted ribbon      esg → globe + orbit rings      renew → wind turbine
    Any <canvas class="model" data-model="..."> is mounted automatically.
@@ -14,7 +15,7 @@
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TAU = Math.PI * 2;
-  const ACCENT = [18, 161, 80];                    // keep in sync with --acc in style.css
+  const ACCENT = [52, 210, 123];                   // keep in sync with --acc in style.css
 
   /* ---------- geometry helpers ---------- */
   function grid(n, m, fn, wrapU, wrapV) {          // parametric surface → { v, f }
@@ -65,6 +66,19 @@
 
   /* ---------- models ---------- */
   const MODELS = {
+    halo(lo) {                                      // the logo's ring and green dot, without the letters
+      const ring = torus(1.02, 0.05, lo ? 120 : 200, lo ? 12 : 18); ring.v = ring.v.map(p => rotX(p, Math.PI / 2));
+      const inner = torus(0.86, 0.01, lo ? 90 : 140, 6); inner.v = inner.v.map(p => rotX(p, Math.PI / 2));
+      const dot = sphere(0.1, lo ? 16 : 26, lo ? 10 : 16);
+      return {
+        scale: 0.265, spin: 0, sway: 0.28, tilt: 0.12,
+        build(t) {
+          const a = 0.7 + t * 0.32, c = [Math.cos(a) * 1.02, Math.sin(a) * 1.02, 0];
+          const d = { v: dot.v.map(q => [q[0] + c[0], q[1] + c[1], q[2] + c[2]]), f: dot.f, mat: 1 };
+          return merge(ring, inner, d);
+        }
+      };
+    },
     logo(lo) {                                      // same geometry as images/logo.svg; lo = lighter mesh for small screens
       const ox = 0.06, oy = -0.05, sh = p => [p[0] + ox, p[1] + oy];
       const U = [...line([-0.62, 0.42], [-0.62, -0.08], 10), ...arc([-0.37, -0.08], 0.25, 180, 360, 26).slice(1), ...line([-0.12, -0.08], [-0.12, 0.42], 10).slice(1)].map(sh);
@@ -88,7 +102,7 @@
       ring1.v = ring1.v.map(p => rotZ(rotX(p, 0.35), 0.3));
       ring2.v = ring2.v.map(p => rotZ(rotX(p, -0.5), -0.5));
       const moon = sphere(0.07, 8, 6, rotZ(rotX([1.42, 0, 0], 0.35), 0.3)); moon.mat = 1;
-      return { mesh: merge(sphere(0.9, 44, 26), ring1, ring2, moon), scale: 0.235, spin: 0.3, tilt: 0.3 };
+      return { mesh: merge(sphere(0.9, 44, 26), ring1, ring2, moon), scale: 0.2, spin: 0.3, tilt: 0.3 };
     },
     renew() {
       const tower = grid(12, 1, (u, w) => { const a = u * TAU, r = 0.085 - w * 0.04; return [r * Math.cos(a), -1.55 + w * 2.15, r * Math.sin(a)]; }, true, false);
