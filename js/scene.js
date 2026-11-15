@@ -71,7 +71,7 @@
       const inner = torus(0.86, 0.01, lo ? 90 : 140, 6); inner.v = inner.v.map(p => rotX(p, Math.PI / 2));
       const dot = sphere(0.1, lo ? 16 : 26, lo ? 10 : 16);
       return {
-        scale: 0.31, spin: 0, sway: 0.28, tilt: 0.12,
+        scale: 0.265, spin: 0, sway: 0.28, tilt: 0.12,
         build(t) {
           const a = 0.7 + t * 0.32, c = [Math.cos(a) * 1.02, Math.sin(a) * 1.02, 0];
           const d = { v: dot.v.map(q => [q[0] + c[0], q[1] + c[1], q[2] + c[2]]), f: dot.f, mat: 1 };

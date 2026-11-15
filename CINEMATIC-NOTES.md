@@ -22,17 +22,17 @@ Static site, no build step. Open `index.html` with Live Server. Works on GitHub 
 | About | Portrait opens like an aperture; image settles inside; counters |
 | Work | Pinned horizontal showcase on desktop; stacked cards on tablet/phone; drag the 3D models |
 | Experience | Rail fills as you read; milestones light up |
-| Skills | Bento grid; cursor-following light |
+| Skills | Six numbered rows; each draws its top bar on scroll, then tags land (decorative bar, not a proficiency score) |
 | Education / Certifications | Rows slide in |
 | Leadership | Each card draws its top rule |
-| UJ Moto A | Pinned; a card opens to full screen around the viewpoint clip |
+| UJ Moto A | Pinned; a card opens to full screen around the dusk ride clip; the UJ MOTO title then settles at the top above the copy and link |
 | UJ Moto B | Pinned; scrolling scrubs through the jump (phones: plain loop) |
 | UJ Moto C | Photo and sunset clip drift at different speeds |
 | Footer | Name rises from the floor |
 
 ## Video
 `media/` holds web versions made from your clips (audio removed):
-- `moto-ride.mp4` (+ `-640` for phones) — DJI viewpoint clip, loops in UJ Moto A
+- `moto-ride.mp4` (+ `-640` for phones) — dusk lakeside POV ride (seconds 12–24 of the dji_mimo clip), loops in UJ Moto A
 - `moto-jump.mp4` (+ `-720`) — seconds 5–10 of the field clip, short keyframe interval so scrubbing is smooth
 - `moto-lineup.mp4` — sunset line-up, loops in UJ Moto C
 Videos load only when you scroll near them, play only while visible, and phones get smaller files.

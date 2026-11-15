@@ -12,7 +12,7 @@
      (or if GSAP fails to load) every section is plain, readable content.
 
    1 helpers + guards   2 loader → intro   3 hero background   4 nav, menu, progress
-   5 lazy video        6 motion sets      7 counters, bento light, misc
+   5 lazy video        6 motion sets      7 counters, misc
    8 contact form → Google Sheet
    ===================================================================== */
 (() => {
@@ -266,10 +266,11 @@
       G.from(item.children, { y: 36, opacity: 0, stagger: 0.07, duration: 1.1, scrollTrigger: { trigger: item, start: 'top 82%' } });
     });
 
-    /* skills: bento tiles assemble */
-    ST.batch('[data-tile]', {
-      start: 'top 88%', once: true,
-      onEnter: b => G.from(b, { y: 60, scale: 0.96, opacity: 0, duration: 1.2, stagger: 0.09, overwrite: true })
+    /* skills: each row draws its bar, then the tags land */
+    $$('[data-sk]').forEach(row => {
+      G.fromTo(row, { '--sk-p': 0 }, { '--sk-p': 1, ease: 'none', scrollTrigger: { trigger: row, start: 'top 92%', end: 'top 55%', scrub: true } });
+      G.from([$('.sk-n', row), $('.sk-head', row)], { y: 34, opacity: 0, stagger: 0.08, duration: 1, scrollTrigger: { trigger: row, start: 'top 86%' } });
+      G.from($$('.chips li', row), { y: 18, opacity: 0, stagger: 0.035, duration: 0.7, scrollTrigger: { trigger: row, start: 'top 82%' } });
     });
 
     /* education / certifications: rows slide in */
@@ -287,7 +288,7 @@
       motoTl.fromTo('#motoFrame', { '--ci': '22svh', '--cx': '30vw', '--cr': '28px' }, { '--ci': '0svh', '--cx': '0vw', '--cr': '0px', ease: 'power2.inOut', duration: 1 }, 0)
         .fromTo('#motoFrame video', { scale: 1.3 }, { scale: 1, ease: 'power2.inOut', duration: 1 }, 0)
         .fromTo('#motoWord', { scale: 0.75 }, { scale: 1.35, ease: 'none', duration: 1 }, 0)
-        .to('#motoWord', { opacity: 0, duration: 0.3, ease: 'none' }, 0.75)
+        .to('#motoWord', { scale: 0.46, y: () => -innerHeight * 0.31, duration: 0.35, ease: 'power2.inOut' }, 0.72)
         .from('#motoCopy > *', { y: 50, opacity: 0, stagger: 0.06, duration: 0.4, ease: 'power3.out' }, 0.95)
         .to({}, { duration: 0.35 });
     } else {
@@ -337,7 +338,7 @@
   fonts.then(() => ST.refresh());
   addEventListener('load', () => ST.refresh());
 
-  /* ---------- 7. counters, bento light ---------- */
+  /* ---------- 7. counters ---------- */
   function countUp(el) {
     const target = parseInt(el.dataset.count, 10), prefix = el.dataset.prefix || '', suffix = el.dataset.suffix || '';
     const show = v => { el.innerHTML = (prefix ? '<span class="pre">' + prefix.trim() + '</span>' : '') + Math.round(v).toLocaleString('en-US') + suffix; };
@@ -346,11 +347,6 @@
     G.to(o, { v: target, duration: 2, ease: 'power3.out', onUpdate: () => show(o.v) });
   }
   $$('[data-count]').forEach(el => ST.create({ trigger: el, start: 'top 88%', once: true, onEnter: () => countUp(el) }));
-  if (fine) $$('.bento-tile').forEach(t => t.addEventListener('mousemove', e => {
-    const r = t.getBoundingClientRect();
-    t.style.setProperty('--mx', (e.clientX - r.left) + 'px'); t.style.setProperty('--my', (e.clientY - r.top) + 'px');
-  }));
-
   /* ---------- 8. contact form → Google Sheet (backend/contact-form.gs) ---------- */
   const form = $('#contactForm');
   const statusEl = $('.form-status', form);
