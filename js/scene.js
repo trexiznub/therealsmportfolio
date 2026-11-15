@@ -102,7 +102,7 @@
       ring1.v = ring1.v.map(p => rotZ(rotX(p, 0.35), 0.3));
       ring2.v = ring2.v.map(p => rotZ(rotX(p, -0.5), -0.5));
       const moon = sphere(0.07, 8, 6, rotZ(rotX([1.42, 0, 0], 0.35), 0.3)); moon.mat = 1;
-      return { mesh: merge(sphere(0.9, 44, 26), ring1, ring2, moon), scale: 0.235, spin: 0.3, tilt: 0.3 };
+      return { mesh: merge(sphere(0.9, 44, 26), ring1, ring2, moon), scale: 0.2, spin: 0.3, tilt: 0.3 };
     },
     renew() {
       const tower = grid(12, 1, (u, w) => { const a = u * TAU, r = 0.085 - w * 0.04; return [r * Math.cos(a), -1.55 + w * 2.15, r * Math.sin(a)]; }, true, false);

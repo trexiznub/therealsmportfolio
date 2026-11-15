@@ -73,8 +73,8 @@
     if (reduce) return;
     const name = $('#heroName');
     if (Split) {
-      const sp = Split.create(name, { type: 'chars', mask: 'chars' });
-      intro.from(sp.chars, { yPercent: 115, rotate: 6, duration: 1.4, stagger: 0.035 }, 0.15);
+      const sp = Split.create(name, { type: 'chars' });   // no per-letter masks: they crop descenders and italic overhang
+      intro.from(sp.chars, { yPercent: 150, rotate: 6, duration: 1.4, stagger: 0.035 }, 0.15);
     } else intro.from(name, { yPercent: 40, opacity: 0, duration: 1.2 }, 0.15);
     intro.from('.hero-photo', { y: 90, opacity: 0, scale: 1.04, duration: 1.8 }, 0)
       .from('.hero-halo', { scale: 0.6, opacity: 0, rotate: -40, duration: 2.2 }, 0)
@@ -219,7 +219,7 @@
     $$('[data-lines]').forEach(h => {
       if (!Split) return G.from(h, { y: 50, opacity: 0, scrollTrigger: { trigger: h, start: 'top 85%' } });
       Split.create(h, {
-        type: 'lines', mask: 'lines', autoSplit: true,
+        type: 'lines', mask: 'lines', linesClass: 'ln', autoSplit: true,
         onSplit: self => G.from(self.lines, { yPercent: 105, duration: 1.3, stagger: 0.09, scrollTrigger: { trigger: h, start: 'top 85%' } })
       });
     });
@@ -328,8 +328,8 @@
     /* contact + footer: the name rises from the floor */
     if (Split) {
       Split.create('#footName', {
-        type: 'chars', mask: 'chars',
-        onSplit: self => G.from(self.chars, { yPercent: 110, stagger: 0.03, duration: 1.3, scrollTrigger: { trigger: '.foot', start: 'top 85%' } })
+        type: 'chars',
+        onSplit: self => G.from(self.chars, { yPercent: 150, stagger: 0.03, duration: 1.3, scrollTrigger: { trigger: '.foot', start: 'top 85%' } })
       });
     }
   });

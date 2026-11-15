@@ -45,6 +45,8 @@ em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.0
 .h-lg{font-size:clamp(32px,3.6vw,54px);margin-top:20px}
 .h-xl{font-size:clamp(40px,6.2vw,100px);margin-top:22px;max-width:13em}
 .h-xxl{font-size:clamp(48px,8.4vw,140px);margin-top:22px;line-height:.92;max-width:10em}
+/* split lines: room inside the mask for descenders and italic overhang */
+.ln{padding:.1em .12em .24em}.ln-mask{margin:-.1em -.12em -.24em}
 .h-lg em,.h-xl em,.h-xxl em{color:var(--fg-2)}
 .sub{max-width:52ch;margin-top:26px;color:var(--muted);font-size:clamp(16px,1.3vw,19px);line-height:1.6}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -121,7 +123,7 @@ nav.away{transform:translateY(-100%)}
 .hero-tags{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:6px 0;margin-top:1.6svh;font-size:13.5px;color:var(--fg-2)}
 .hero-tags li{display:flex;align-items:center}
 .hero-tags li+li::before{content:"";width:4px;height:4px;margin:0 14px;border-radius:50%;background:var(--acc)}
-.hero-name{font:700 min(14.2vw,24svh)/.86 var(--display);letter-spacing:-.065em;white-space:nowrap;padding:0 .05em .08em}
+.hero-name{font:700 min(14.2vw,24svh)/.86 var(--display);letter-spacing:-.065em;white-space:nowrap;padding:0 .05em .08em;clip-path:inset(-.4em -50vw -.32em)}
 .hero-name em{font-weight:400;letter-spacing:-.03em;color:var(--fg-2)}
 .scroll-cue{position:absolute;z-index:2;right:var(--gut);bottom:5svh;display:flex;flex-direction:column;align-items:center;gap:12px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
 .scroll-cue span{writing-mode:vertical-rl}
@@ -286,7 +288,7 @@ a.ct-row:hover .ico{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .ct-row b{display:block;font-weight:500;font-size:16px;overflow-wrap:anywhere}
 .ct-row i{font-style:normal;font-size:12.5px;letter-spacing:.06em;color:var(--muted)}
 .foot{border-top:1px solid var(--line);overflow:hidden}
-.foot-name{padding:4vw var(--gut) 0;text-align:center;font:700 min(13.4vw,240px)/.86 var(--display);letter-spacing:-.065em;white-space:nowrap}
+.foot-name{padding:4vw var(--gut) 0;text-align:center;font:700 min(13.4vw,240px)/.86 var(--display);letter-spacing:-.065em;white-space:nowrap;clip-path:inset(-.4em -50vw -.32em)}
 .foot-name em{color:var(--fg-2)}
 .foot-row{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:22px;padding-bottom:26px;font-size:13px;color:var(--muted)}
 .foot-row a:hover{color:var(--fg)}
