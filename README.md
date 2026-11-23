@@ -1,6 +1,12 @@
 # Ujwal Raj K. P — Portfolio
 
-Single-page dark portfolio. No build step, no dependencies.
+Single-page portfolio in green and black: a blackletter wordmark, a deep green glow, Geist + Geist Mono,
+project screens that bend as you scroll, and a page colour that shifts section by section
+(black → forest green → moss → black). No build step.
+
+- Colours: `:root` at the top of `css/style.css` (`--acc` green accent, `--ink`, `--forest`, `--moss`).
+  If you change `--acc`, change `ACCENT` in `js/scene.js` too (the 3D models).
+- Project screenshots: `images/work/` (1440×900 WebP). Retake them when a project's design changes.
 
 ## Run it
 Open the folder in VS Code → right-click `index.html` → **Open with Live Server**.
@@ -38,6 +44,9 @@ Every message sent through the contact form is saved as a row in a Google Sheet 
 (Time · Name · Email · Message · Page), and a copy is emailed to you. Hit **Reply** on that
 email to answer the sender directly.
 
+**Status: connected** (deployed 23 Nov 2026 from the "Untitled project" script on thegaminnoobie@gmail.com;
+the Web app URL is already in `index.html`). The steps below are only needed if you ever set it up again.
+
 The backend is one file: `backend/contact-form.gs`. One-time setup (about 5 minutes):
 
 1. Go to [sheets.new](https://sheets.new) and name the sheet, e.g. **Portfolio messages**.
@@ -65,7 +74,8 @@ Notes
 - Until `data-endpoint` is filled in, the form tells visitors it isn't connected yet.
 
 ## Placeholders still to fill
-GitHub / Live Demo links for RenewEdge AI and SPARK AI, contact-form Web app URL (see above).
+Live demo for SPARK AI and RenewEdge AI (no public site yet).
+If `data-endpoint` is ever emptied, the form falls back to opening the visitor's email app with their message filled in.
 
 ## Resume
 `resume/Ujwal-Raj-KP-Resume.pdf` is linked from the hero's **Download CV** button and the contact

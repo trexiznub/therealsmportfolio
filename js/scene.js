@@ -15,7 +15,7 @@
   'use strict';
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TAU = Math.PI * 2;
-  const ACCENT = [52, 210, 123];                   // keep in sync with --acc in style.css
+  const ACCENT = [61, 220, 132];                   // keep in sync with --acc in style.css
 
   /* ---------- geometry helpers ---------- */
   function grid(n, m, fn, wrapU, wrapV) {          // parametric surface → { v, f }
