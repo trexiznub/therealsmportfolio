@@ -2,18 +2,15 @@
    main.js — motion and behaviour (GSAP 3 + ScrollTrigger + SplitText)
    The 3D models live in scene.js.
 
-   Architecture
-   - Native scrolling. Nothing hijacks the wheel or touch.
-   - gsap.matchMedia() holds three motion sets: desktop (≥1101px), tablet+phone
-     (≤1100px) and reduced motion. Each set is reverted automatically when the
-     viewport or preference changes, which is the vanilla-JS equivalent of
-     @gsap/react's useGSAP cleanup.
+   - Native scrolling; nothing hijacks the wheel or touch.
+   - gsap.matchMedia() holds the motion sets (desktop, tablet/phone, reduced motion);
+     each reverts itself when the viewport or preference changes.
    - Hidden start states are only ever set by GSAP, so without JavaScript
      (or if GSAP fails to load) every section is plain, readable content.
 
-   1 helpers + guards   2 loader → intro   3 hero background   4 nav, menu, progress
-   5 lazy video        6 motion sets      7 counters, misc
-   8 contact form → Google Sheet
+   1 helpers + guards   2 loader → intro   3 clock   4 nav, menu, progress, page colour
+   5 lazy video   6 motion sets   7 counters   8 small hovers
+   9 contact form → Google Sheet
    ===================================================================== */
 (() => {
   'use strict';
@@ -24,11 +21,37 @@
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const wait = ms => new Promise(r => setTimeout(r, ms));
 
+  // wrap every word (or letter) of an element in a span, keeping nested tags such as <span class="hl">
+  function split(el, unit = 'w') {
+    const out = [];
+    const walk = node => [...node.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) return frag.appendChild(document.createTextNode(part));
+          const pieces = unit === 'c' ? [...part] : [part];
+          pieces.forEach(p => { const s = document.createElement('span'); s.className = unit === 'c' ? 'char' : 'w'; s.textContent = p; frag.appendChild(s); out.push(s); });
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1 && !n.classList.contains('avatar')) walk(n);
+    });
+    walk(el);
+    return out;
+  }
+
+  /* ---------- 3. clock (Pune time) — runs even if GSAP fails ---------- */
+  const clocks = $$('#clock, #clock2');
+  const fmt = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' });
+  const tickClock = () => { const t = fmt.format(new Date()); clocks.forEach(c => { c.textContent = t; }); };
+  tickClock(); setInterval(tickClock, 10000);
+
   /* ---------- 1. guards ---------- */
   const G = window.gsap, ST = window.ScrollTrigger, Split = window.SplitText;
   if (!G || !ST) {                                   // library failed to load: show the plain page
     root.classList.remove('js');
     const l = $('#loader'); if (l) l.remove();
+    setupForm();
     return;
   }
   G.registerPlugin(ST); if (Split) G.registerPlugin(Split);
@@ -47,7 +70,7 @@
     fontLink.addEventListener('load', r, { once: true }); fontLink.addEventListener('error', r, { once: true });
   });
   const fonts = cssLoaded.then(() => document.fonts
-    ? Promise.all(['700 1em "Inter Tight"', '400 1em "Inter"', 'italic 1em "Instrument Serif"'].map(f => document.fonts.load(f))).catch(() => {}) : null);
+    ? Promise.all(['400 1em "Inter"', '600 1em "Inter"', '700 1em "Inter"', '400 1em "Geist Mono"'].map(f => document.fonts.load(f))).catch(() => {}) : null);
   const heroImg = $('.hero-photo img');
   const photoReady = new Promise(res => {
     if (!heroImg) return res();
@@ -61,79 +84,42 @@
   (function tick(now) {
     const target = Math.min(real, Math.min((now - t0) / Math.max(minTime, 1), 1)) * 100;
     shown += (target - shown) * 0.12; if (target === 100 && shown > 99.4) shown = 100;
-    pctEl.textContent = Math.floor(shown); barEl.style.transform = `scaleX(${shown / 100})`;
+    pctEl.textContent = String(Math.floor(shown)).padStart(3, '0'); barEl.style.transform = `scaleX(${shown / 100})`;
     if (ticking) requestAnimationFrame(tick);
   })(t0);
   if (!seen && !reduce) words.forEach((w, i) => setTimeout(() => { if (i) words[i - 1].classList.replace('on', 'off'); w.classList.add('on'); }, 120 + i * 680));
   else words[words.length - 1].classList.add('on');
 
-  // Intro: built now (while the loader covers the page), played when it lifts.
+  // Intro: built while the loader covers the page, played when it lifts.
   const intro = G.timeline({ paused: true, defaults: { ease: 'expo.out' } });
-  function buildIntro() {
-    if (reduce) return;
-    const name = $('#heroName');
-    if (Split) {
-      const sp = Split.create(name, { type: 'chars' });   // no per-letter masks: they crop descenders and italic overhang
-      intro.from(sp.chars, { yPercent: 150, rotate: 6, duration: 1.4, stagger: 0.035 }, 0.15);
-    } else intro.from(name, { yPercent: 40, opacity: 0, duration: 1.2 }, 0.15);
-    intro.from('.hero-photo', { y: 90, opacity: 0, scale: 1.04, duration: 1.8 }, 0)
-      .from('.hero-halo', { scale: 0.6, opacity: 0, rotate: -40, duration: 2.2 }, 0)
-      .from('[data-hero]', { y: 22, opacity: 0, duration: 1.1, stagger: 0.08 }, 0.6)
-      .from('#nav', { y: -30, opacity: 0, duration: 1, clearProps: 'transform,opacity' }, 0.7);
+  const wordSpan = $('#heroWord > span[aria-hidden]');
+  const heroChars = wordSpan ? split(wordSpan, 'c') : [];
+  if (wordSpan) wordSpan.classList.add('split');
+  if (!reduce) {
+    intro.from(heroChars, { yPercent: 70, opacity: 0, filter: 'blur(24px)', duration: 1.6, stagger: 0.07 }, 0.1)
+      .from('#heroGlow', { opacity: 0, scale: 1.2, duration: 2.4 }, 0)
+      .from('#heroPhoto', { yPercent: 18, opacity: 0, duration: 1.8 }, 0.35)
+      .from('[data-hero]', { y: 24, opacity: 0, duration: 1.1, stagger: 0.09 }, 0.8)
+      .from('.fl', { y: 50, scale: 0.85, opacity: 0, filter: 'blur(10px)', duration: 1.4, stagger: 0.14, ease: 'back.out(1.4)', clearProps: 'filter' }, 1.0)
+      .from('.code .cl', { opacity: 0, x: -10, duration: 0.5, stagger: 0.16, ease: 'power2.out' }, 1.5)
+      .from('#nav', { y: -30, opacity: 0, duration: 1, clearProps: 'transform,opacity' }, 0.9);
   }
-  buildIntro();
 
   Promise.race([Promise.all([fonts, photoReady, wait(minTime)]), wait(6000)]).then(() => {
     real = 1;
     const lift = () => {
       if (shown < 100) return requestAnimationFrame(lift);
       ticking = false;
-      $('.hero-photo').classList.add('sharp');
       G.to(loader, {
-        yPercent: -100, duration: reduce ? 0 : 1.1, ease: 'expo.inOut', delay: 0.15,
-        onStart: () => intro.play(0.0),
+        clipPath: 'inset(0 0 100% 0)', duration: reduce ? 0 : 1.1, ease: 'expo.inOut', delay: 0.15,
+        onStart: () => intro.play(0),
         onComplete: () => { loader.remove(); document.body.style.overflow = ''; ST.refresh(); }
       });
     };
     lift();
   });
 
-  /* ---------- 3. hero background: drifting contour lines (wind over terrain) ---------- */
-  (function contours() {
-    const c = $('#heroBg'); if (!c) return;
-    const ctx = c.getContext('2d');
-    let W = 0, H = 0, raf = 0, on = true, mx = 0.5, my = 0.5, tmx = 0.5, tmy = 0.5;
-    const fit = () => { const d = Math.min(devicePixelRatio || 1, 2), r = c.getBoundingClientRect(); W = r.width; H = r.height; c.width = W * d; c.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
-    const lines = () => (W < 700 ? 26 : 44);
-    function draw(t) {
-      raf = 0;
-      mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04;
-      ctx.clearRect(0, 0, W, H);
-      const n = lines(), seg = W < 700 ? 60 : 110;
-      for (let i = 0; i < n; i++) {
-        const k = i / (n - 1), base = H * (0.12 + k * 0.9);
-        ctx.beginPath();
-        for (let s = 0; s <= seg; s++) {
-          const x = (s / seg) * W, u = s / seg;
-          const bump = Math.exp(-Math.pow((u - mx) / 0.18, 2)) * 40 * (1 - Math.abs(k - my));
-          const y = base + Math.sin(u * 5.2 + k * 3.1 + t * 0.00018) * 18 * (0.4 + k)
-                         + Math.sin(u * 11 - t * 0.00025 + k * 7) * 6 - bump;
-          s ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        }
-        const green = k > 0.72;
-        ctx.strokeStyle = green ? `rgba(52,210,123,${0.05 + (k - 0.72) * 0.35})` : `rgba(238,238,232,${0.035 + k * 0.05})`;
-        ctx.lineWidth = 1; ctx.stroke();
-      }
-      if (on && !reduce && !document.hidden) raf = requestAnimationFrame(draw);
-    }
-    fit(); draw(0);
-    new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on && !raf) raf = requestAnimationFrame(draw); }).observe(c);
-    addEventListener('resize', () => { fit(); if (!raf) raf = requestAnimationFrame(draw); });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && on && !raf) raf = requestAnimationFrame(draw); });
-    if (fine) $('#top').addEventListener('mousemove', e => { tmx = e.clientX / innerWidth; tmy = e.clientY / innerHeight; });
-  })();
-
-  /* ---------- 4. nav, menu, progress ---------- */
+  /* ---------- 4. nav, menu, progress, page colour ---------- */
   const nav = $('#nav'), burger = $('#burger'), menu = $('#menu');
   ST.create({
     start: 0, end: 'max',
@@ -148,15 +134,23 @@
     trigger: sec, start: 'top 50%', end: 'bottom 50%',
     onToggle: s => { if (s.isActive) links.forEach(l => l.classList.toggle('on', l.getAttribute('href') === '#' + sec.id)); }
   }));
+  // the whole page changes colour as each section reaches the middle of the screen
+  $$('[data-theme]:not(body)').forEach(sec => ST.create({
+    trigger: sec, start: 'top 55%', end: 'bottom 55%',
+    onToggle: s => { if (s.isActive) document.body.dataset.theme = sec.dataset.theme; }
+  }));
+  ST.create({ trigger: '#top', start: 'top top', end: 'bottom 55%', onEnterBack: () => { document.body.dataset.theme = 'ink'; } });
 
   function setMenu(open) {
     burger.classList.toggle('open', open); menu.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
     burger.setAttribute('aria-expanded', open); burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     menu.setAttribute('aria-hidden', !open); document.body.style.overflow = open ? 'hidden' : '';
   }
   burger.addEventListener('click', () => setMenu(!menu.classList.contains('open')));
   $$('a', menu).forEach(a => a.addEventListener('click', () => setMenu(false)));
-  addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('open')) setMenu(false); });
+  matchMedia('(min-width: 861px)').addEventListener('change', e => { if (e.matches) setMenu(false); });
 
   /* ---------- 5. lazy video: load only near the viewport, play only while visible ---------- */
   const small = matchMedia('(max-width: 800px)').matches || (navigator.connection && navigator.connection.saveData);
@@ -174,6 +168,10 @@
   $$('video.lazy-video').forEach(v => { near.observe(v); vis.observe(v); });
 
   /* ---------- 6. motion sets ---------- */
+  // split once, outside matchMedia, so a resize never splits the same text twice
+  const sayWords = $('#aboutSay') ? split($('#aboutSay')) : [];
+  const scriptChars = $$('[data-script]').map(h => split(h, 'c'));
+
   const mm = G.matchMedia();
   mm.add({
     desk: '(min-width: 1101px) and (prefers-reduced-motion: no-preference)',
@@ -188,112 +186,85 @@
       return;
     }
 
-    /* hero: drifts apart as you scroll away; subtle parallax with the cursor on desktop */
+    /* hero: the name sinks, the portrait rises, the glow fades as you scroll away */
     const heroOut = G.timeline({ scrollTrigger: { trigger: '#top', start: 'top top', end: 'bottom top', scrub: true } });
-    heroOut.to('.hero-photo', { yPercent: 14, scale: 0.94, ease: 'none' }, 0)
-      .to('.hero-halo', { scale: 1.35, opacity: 0, rotate: 30, ease: 'none' }, 0)
-      .to('.hero-type', { yPercent: -40, opacity: 0.1, ease: 'none' }, 0)
-      .to(['.hero-meta', '.scroll-cue'], { opacity: 0, y: -40, ease: 'none' }, 0)
-      .to('.hero-bg', { opacity: 0.25, ease: 'none' }, 0);
-    if (desk && fine) {
-      const px = G.quickTo('.hero-photo img', 'x', { duration: 1.2, ease: 'power3' });
-      const nx = G.quickTo('.hero-name', 'x', { duration: 1.6, ease: 'power3' });
-      const onMove = e => { const u = e.clientX / innerWidth - 0.5; px(u * -18); nx(u * 24); };
+    heroOut.to('#heroWord', { yPercent: 30, scale: 0.92, opacity: 0.2, ease: 'none' }, 0)
+      .to('#heroPhoto', { yPercent: -8, ease: 'none' }, 0)
+      .to('.hero-foot', { y: -60, opacity: 0, ease: 'none' }, 0)
+      .to('#heroGlow', { yPercent: -18, ease: 'none' }, 0)
+      .to('.hero-badge > *', { opacity: 0, ease: 'none' }, 0);
+    // floating cards rise at different speeds (deeper = faster), so the hero comes apart in layers
+    $$('.fl').forEach(f => heroOut.to(f, { yPercent: -60 * parseFloat(f.dataset.depth || 1), ease: 'none' }, 0).to($('.fl-in', f), { opacity: 0, ease: 'none' }, 0));
+    if (desk && fine) {                              // the dark glow, the name and the cards lean toward the cursor
+      const gx = G.quickTo('#heroGlow', 'x', { duration: 2, ease: 'power3' });
+      const wx = G.quickTo('#heroWord', 'x', { duration: 1.6, ease: 'power3' });
+      const px = G.quickTo('#heroPhoto', 'x', { duration: 1.4, ease: 'power3' });
+      const cards = $$('.fl').map(f => ({ d: parseFloat(f.dataset.depth || 1), x: G.quickTo($('.fl-p', f), 'x', { duration: 1.2, ease: 'power3' }), y: G.quickTo($('.fl-p', f), 'y', { duration: 1.2, ease: 'power3' }) }));
+      const onMove = e => {
+        const u = e.clientX / innerWidth - 0.5, v = e.clientY / innerHeight - 0.5;
+        gx(u * 120); wx(u * -26); px(u * 18);
+        cards.forEach(c => { c.x(u * 34 * c.d); c.y(v * 24 * c.d); });
+      };
       $('#top').addEventListener('mousemove', onMove);
       ctx.add(() => () => $('#top').removeEventListener('mousemove', onMove));
     }
 
-    /* manifesto: words light up as you read (pinned on larger screens) */
-    if (Split) {
-      const mf = Split.create('#mfText', { type: 'words', wordsClass: 'w' });
-      G.set(mf.words, { opacity: 0.14 });
-      G.to(mf.words, {
-        opacity: 1, stagger: 0.12, ease: 'none',
-        scrollTrigger: phone
-          ? { trigger: '#mfText', start: 'top 80%', end: 'bottom 45%', scrub: true }
-          : { trigger: '.manifesto', start: 'top top', end: '+=140%', pin: true, scrub: true }
-      });
-    }
-
-    /* section headings: lines rise out of a mask */
+    /* headings: lines rise out of a mask */
     $$('[data-lines]').forEach(h => {
-      if (!Split) return G.from(h, { y: 50, opacity: 0, scrollTrigger: { trigger: h, start: 'top 85%' } });
+      if (!Split) return G.from(h, { y: 50, opacity: 0, scrollTrigger: { trigger: h, start: 'top 88%' } });
       Split.create(h, {
         type: 'lines', mask: 'lines', linesClass: 'ln', autoSplit: true,
-        onSplit: self => G.from(self.lines, { yPercent: 105, duration: 1.3, stagger: 0.09, scrollTrigger: { trigger: h, start: 'top 85%' } })
+        onSplit: self => G.from(self.lines, { yPercent: 110, duration: 1.4, stagger: 0.1, scrollTrigger: { trigger: h, start: 'top 88%' } })
       });
     });
     ST.batch('[data-up]', {
-      start: 'top 88%', once: true,
+      start: 'top 90%', once: true,
       onEnter: b => G.from(b, { y: 40, opacity: 0, duration: 1.2, stagger: 0.08, overwrite: true })
     });
 
-    /* about: the portrait opens like an aperture, image settles inside */
-    G.fromTo('#aboutPhoto .mask', { clipPath: 'inset(16% 14% 16% 14% round 24px)' }, {
-      clipPath: 'inset(0% 0% 0% 0% round 24px)', ease: 'none',
-      scrollTrigger: { trigger: '#aboutPhoto', start: 'top 90%', end: 'center 50%', scrub: true }
-    });
-    G.fromTo('#aboutPhoto img', { scale: 1.3, yPercent: -6 }, {
-      scale: 1, yPercent: 6, ease: 'none',
-      scrollTrigger: { trigger: '#aboutPhoto', start: 'top bottom', end: 'bottom top', scrub: true }
-    });
-    G.from('.stat', { y: 40, opacity: 0, stagger: 0.07, duration: 1.2, scrollTrigger: { trigger: '#stats', start: 'top 85%' } });
+    /* section headings: letters rise into place one by one */
+    scriptChars.forEach(chars => G.from(chars, {
+      yPercent: 60, opacity: 0, filter: 'blur(8px)', duration: 1.1, stagger: 0.035,
+      scrollTrigger: { trigger: chars[0].parentElement, start: 'top 88%' }
+    }));
 
-    /* work: pinned horizontal showcase on desktop, stacked reveals elsewhere */
-    const track = $('#workTrack');
-    if (desk) {
-      $('#work').classList.add('h-scroll');
-      ctx.add(() => () => $('#work').classList.remove('h-scroll'));
-      const dist = () => track.scrollWidth - innerWidth;
-      const slide = G.to(track, {
-        x: () => -dist(), ease: 'none',
-        scrollTrigger: { trigger: '#workPin', start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1 }
-      });
-      G.to('#workBar', { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '#workPin', start: 'top top', end: () => '+=' + dist(), scrub: true, invalidateOnRefresh: true } });
-      $$('.proj', track).forEach(card => {
-        const body = $('.proj-body', card), vis = $('.proj-visual', card);
-        if (body) G.from(body.children, { x: 80, opacity: 0, stagger: 0.06, duration: 1, scrollTrigger: { trigger: card, containerAnimation: slide, start: 'left 85%' } });
-        if (vis) G.fromTo(vis, { scale: 0.92 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: card, containerAnimation: slide, start: 'left right', end: 'left 30%', scrub: true } });
-      });
-    } else {
-      $$('.proj', track).forEach(card => G.from(card, { y: 70, opacity: 0, duration: 1.2, scrollTrigger: { trigger: card, start: 'top 88%' } }));
+    /* work: each screen starts bent back, straightens as it reaches the middle, then leans away */
+    $$('[data-wk]').forEach(card => {
+      const bend = $('.wk-bend', card);
+      G.timeline({ scrollTrigger: { trigger: card.querySelector('.wk-screen'), start: 'top bottom', end: 'bottom top', scrub: 0.6 } })
+        .fromTo(bend, { '--rx': '38deg', '--sk': '-5deg', '--sc': 0.86 }, { '--rx': '0deg', '--sk': '0deg', '--sc': 1, ease: 'power2.out', duration: 0.5 })
+        .to(bend, { '--rx': '-16deg', '--sk': '3deg', '--sc': 0.94, ease: 'power1.in', duration: 0.5 });
+      G.from($('.wk-meta', card).children, { y: 30, opacity: 0, stagger: 0.06, duration: 1, scrollTrigger: { trigger: card, start: 'top 80%' } });
+    });
+
+    /* about: the sentence lights up word by word; the red part comes into focus */
+    if (sayWords.length) {
+      const hl = sayWords.filter(w => w.closest('.hl'));
+      const plain = sayWords.filter(w => !w.closest('.hl'));
+      G.set(plain, { opacity: 0.14 });
+      G.set(hl, { opacity: 0.1, filter: 'blur(12px)' });
+      const tl = G.timeline({ scrollTrigger: { trigger: '#aboutSay', start: phone ? 'top 85%' : 'top 75%', end: phone ? 'bottom 55%' : 'bottom 45%', scrub: true } });
+      tl.to(plain, { opacity: 1, stagger: 0.1, ease: 'none', duration: 0.3 })
+        .to(hl, { opacity: 1, filter: 'blur(0px)', stagger: 0.12, ease: 'none', duration: 0.4 });
+      G.from('.avatar', { scale: 0, rotate: -90, duration: 1.4, ease: 'back.out(1.6)', scrollTrigger: { trigger: '#aboutSay', start: 'top 80%' } });
     }
 
-    /* experience: the rail fills as you read; each milestone lights up */
-    G.to('#tlFill', { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '#timeline', start: 'top 65%', end: 'bottom 65%', scrub: true } });
-    $$('[data-tl]').forEach(item => {
-      ST.create({ trigger: item, start: 'top 65%', onToggle: s => item.classList.toggle('on', s.isActive || s.progress === 1), onLeaveBack: () => item.classList.remove('on'), onEnter: () => item.classList.add('on') });
-      G.from(item.children, { y: 36, opacity: 0, stagger: 0.07, duration: 1.1, scrollTrigger: { trigger: item, start: 'top 82%' } });
-    });
-
-    /* skills: each row draws its bar, then the tags land */
-    $$('[data-sk]').forEach(row => {
-      G.fromTo(row, { '--sk-p': 0 }, { '--sk-p': 1, ease: 'none', scrollTrigger: { trigger: row, start: 'top 92%', end: 'top 55%', scrub: true } });
-      G.from([$('.sk-n', row), $('.sk-head', row)], { y: 34, opacity: 0, stagger: 0.08, duration: 1, scrollTrigger: { trigger: row, start: 'top 86%' } });
-      G.from($$('.chips li', row), { y: 18, opacity: 0, stagger: 0.035, duration: 0.7, scrollTrigger: { trigger: row, start: 'top 82%' } });
-    });
-
-    /* education / certifications: rows slide in */
-    ST.batch('[data-row]', { start: 'top 90%', once: true, onEnter: b => G.from(b, { x: -40, opacity: 0, stagger: 0.08, duration: 1.1, overwrite: true }) });
-
-    /* leadership: each card draws its top rule, then the text follows */
-    $$('[data-lead]').forEach((card, i) => {
-      G.fromTo(card, { '--line-p': 0 }, { '--line-p': 1, ease: 'none', scrollTrigger: { trigger: card, start: 'top 90%', end: 'top 55%', scrub: true } });
-      G.from(card.children, { y: 30, opacity: 0, stagger: 0.07, delay: i * 0.08, scrollTrigger: { trigger: card, start: 'top 85%' } });
-    });
+    /* rows (experience, education, notes) slide up in turn */
+    ST.batch('[data-row]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 36, opacity: 0, stagger: 0.08, duration: 1.1, overwrite: true }) });
+    ST.batch('[data-cell]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 50, opacity: 0, stagger: 0.07, duration: 1.2, overwrite: true }) });
 
     /* UJ Moto A: a card opens to full screen around the footage */
     if (!phone) {
       const motoTl = G.timeline({ scrollTrigger: { trigger: '#motoPin', start: 'top top', end: '+=180%', pin: true, scrub: true, anticipatePin: 1 } });
-      motoTl.fromTo('#motoFrame', { '--ci': '22svh', '--cx': '30vw', '--cr': '28px' }, { '--ci': '0svh', '--cx': '0vw', '--cr': '0px', ease: 'power2.inOut', duration: 1 }, 0)
+      motoTl.fromTo('#motoFrame', { '--ci': '20svh', '--cx': '28vw', '--cr': '18px' }, { '--ci': '0svh', '--cx': '0vw', '--cr': '0px', ease: 'power2.inOut', duration: 1 }, 0)
         .fromTo('#motoFrame video', { scale: 1.3 }, { scale: 1, ease: 'power2.inOut', duration: 1 }, 0)
-        .fromTo('#motoWord', { scale: 0.75 }, { scale: 1.35, ease: 'none', duration: 1 }, 0)
-        .to('#motoWord', { scale: 0.46, y: () => -innerHeight * 0.31, duration: 0.35, ease: 'power2.inOut' }, 0.72)
+        .fromTo('#motoWord', { scale: 0.7 }, { scale: 1.25, ease: 'none', duration: 1 }, 0)
+        .to('#motoWord', { scale: 0.5, y: () => -innerHeight * 0.3, duration: 0.35, ease: 'power2.inOut' }, 0.72)
         .from('#motoCopy > *', { y: 50, opacity: 0, stagger: 0.06, duration: 0.4, ease: 'power3.out' }, 0.95)
         .to({}, { duration: 0.35 });
     } else {
-      G.fromTo('#motoFrame', { clipPath: 'inset(10% 8% 10% 8% round 24px)' }, { clipPath: 'inset(0% 0% 0% 0% round 24px)', ease: 'none', scrollTrigger: { trigger: '#motoFrame', start: 'top 92%', end: 'center 55%', scrub: true } });
-      G.from('#motoCopy > *', { y: 30, opacity: 0, stagger: 0.07, scrollTrigger: { trigger: '#motoCopy', start: 'top 88%' } });
+      G.fromTo('#motoFrame', { clipPath: 'inset(10% 8% 10% 8% round 18px)' }, { clipPath: 'inset(0% 0% 0% 0% round 18px)', ease: 'none', scrollTrigger: { trigger: '#motoPin', start: 'top 92%', end: 'center 55%', scrub: true } });
+      G.from('#motoCopy > *', { y: 30, opacity: 0, stagger: 0.07, scrollTrigger: { trigger: '#motoCopy', start: 'top 92%' } });
     }
 
     /* UJ Moto B: scroll scrubs through the jump (desktop/tablet); phones simply loop it */
@@ -320,21 +291,19 @@
       });
     } else if (jv) {
       jv.classList.add('lazy-video'); jv.setAttribute('loop', ''); near.observe(jv); vis.observe(jv);
+      $$('.jump-words li').forEach(li => li.classList.add('on'));
     }
 
     /* UJ Moto C: photo and video drift at different speeds */
-    $$('[data-par]').forEach(el => G.fromTo(el, { yPercent: -parseFloat(el.dataset.par) }, { yPercent: parseFloat(el.dataset.par), ease: 'none', scrollTrigger: { trigger: '.moto-duo', start: 'top bottom', end: 'bottom top', scrub: true } }));
+    $$('[data-par]').forEach(el => G.fromTo(el.querySelector('img, video'), { yPercent: -parseFloat(el.dataset.par) * 0.6 }, { yPercent: parseFloat(el.dataset.par) * 0.6, ease: 'none', scrollTrigger: { trigger: '.moto-duo', start: 'top bottom', end: 'bottom top', scrub: true } }));
+    G.from('.moto-duo figure', { y: 50, opacity: 0, stagger: 0.12, duration: 1.3, scrollTrigger: { trigger: '.moto-duo', start: 'top 85%' } });
 
-    /* contact + footer: the name rises from the floor */
-    if (Split) {
-      Split.create('#footName', {
-        type: 'chars',
-        onSplit: self => G.from(self.chars, { yPercent: 150, stagger: 0.03, duration: 1.3, scrollTrigger: { trigger: '.foot', start: 'top 85%' } })
-      });
-    }
+    /* contact: the glow breathes in as you arrive; footer name rises */
+    G.fromTo('.contact-glow', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, ease: 'none', scrollTrigger: { trigger: '#contact', start: 'top 90%', end: 'top 20%', scrub: true } });
+    G.from('.foot-mark', { yPercent: 60, opacity: 0, duration: 1.4, scrollTrigger: { trigger: '.foot', start: 'top 95%' } });
   });
 
-  // layout settles after fonts and images: recalculate trigger positions once
+  // layout settles after fonts and images: recalculate trigger positions
   fonts.then(() => ST.refresh());
   addEventListener('load', () => ST.refresh());
 
@@ -346,46 +315,60 @@
     const o = { v: 0 }; show(0);
     G.to(o, { v: target, duration: 2, ease: 'power3.out', onUpdate: () => show(o.v) });
   }
-  $$('[data-count]').forEach(el => ST.create({ trigger: el, start: 'top 88%', once: true, onEnter: () => countUp(el) }));
-  /* ---------- 8. contact form → Google Sheet (backend/contact-form.gs) ---------- */
-  const form = $('#contactForm');
-  const statusEl = $('.form-status', form);
-  const sendBtn = $('button[type="submit"]', form);
-  const sendLabel = $('.btn-label', sendBtn);
+  $$('[data-count]').forEach(el => ST.create({ trigger: el, start: 'top 90%', once: true, onEnter: () => countUp(el) }));
 
-  function setStatus(text, kind) {
-    statusEl.textContent = text;
-    statusEl.className = 'form-status' + (kind ? ' is-' + kind : '');
+  /* ---------- 8. small hovers: "Open ↗" label follows the cursor; skill cells glow under it ---------- */
+  if (fine) $$('a.wk-screen, .cell').forEach(el => el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', e.clientX - r.left + 'px'); el.style.setProperty('--my', e.clientY - r.top + 'px');
+  }));
+
+  setupForm();
+
+  /* ---------- 9. contact form → Google Sheet (backend/contact-form.gs) ---------- */
+  function setupForm() {
+    const form = $('#contactForm');
+    if (!form) return;
+    const statusEl = $('.form-status', form);
+    const sendBtn = $('button[type="submit"]', form);
+    const sendLabel = $('.btn-label', sendBtn);
+    const setStatus = (text, kind) => { statusEl.textContent = text; statusEl.className = 'form-status' + (kind ? ' is-' + kind : ''); };
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (form.classList.contains('sending')) return;
+      const bad = $$('input[required], textarea[required]', form).find(f => !f.value.trim() || !f.checkValidity());
+      $$('.form-field', form).forEach(f => f.classList.remove('invalid'));
+      if (bad) {
+        bad.closest('.form-field').classList.add('invalid');
+        bad.focus();
+        return setStatus(bad.type === 'email' && bad.value.trim() ? 'Please check your email address.' : 'Please fill in every field.', 'error');
+      }
+      const fd = new FormData(form);
+      const endpoint = form.dataset.endpoint;
+      if (!endpoint) {
+        // Not connected to the Sheet yet: open the visitor's email app with the message filled in instead.
+        const body = `${fd.get('message')}\n\n— ${fd.get('name')} (${fd.get('email')})`;
+        location.href = 'mailto:ujwalraj3103@gmail.com?subject=' + encodeURIComponent('Portfolio message from ' + fd.get('name')) + '&body=' + encodeURIComponent(body);
+        return setStatus('Your email app should open with the message ready to send.', 'ok');
+      }
+      const data = new URLSearchParams(fd);
+      data.set('page', location.href);
+      form.classList.add('sending'); sendBtn.disabled = true; sendLabel.textContent = 'Sending'; setStatus('');
+      try {
+        // URL-encoded body = "simple" request, so Apps Script answers without a CORS preflight
+        const res = await fetch(endpoint, { method: 'POST', body: data });
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || !out.ok) throw new Error(out.error || 'Request failed');
+        form.reset(); form.classList.add('sent');
+        setStatus('Thanks! Your message is in. I’ll get back to you soon.', 'ok');
+      } catch (err) {
+        setStatus(err.message && err.message !== 'Request failed' && !/fetch/i.test(err.message)
+          ? err.message : 'Couldn’t send right now. Please try again, or email me directly.', 'error');
+      } finally {
+        form.classList.remove('sending'); sendBtn.disabled = false; sendLabel.textContent = 'Send message';
+      }
+    });
+    form.addEventListener('input', e => { e.target.closest('.form-field')?.classList.remove('invalid'); form.classList.remove('sent'); });
   }
-
-  form.addEventListener('submit', async e => {
-    e.preventDefault();
-    if (form.classList.contains('sending')) return;
-    const bad = $$('input[required], textarea[required]', form).find(f => !f.value.trim() || !f.checkValidity());
-    $$('.form-field', form).forEach(f => f.classList.remove('invalid'));
-    if (bad) {
-      bad.closest('.form-field').classList.add('invalid');
-      bad.focus();
-      return setStatus(bad.type === 'email' && bad.value.trim() ? 'Please check your email address.' : 'Please fill in every field.', 'error');
-    }
-    const endpoint = form.dataset.endpoint;
-    if (!endpoint) return setStatus('The contact form isn’t connected yet. Please email me directly.', 'error');
-    const data = new URLSearchParams(new FormData(form));
-    data.set('page', location.href);
-    form.classList.add('sending'); sendBtn.disabled = true; sendLabel.textContent = 'Sending…'; setStatus('');
-    try {
-      // URL-encoded body = "simple" request, so Apps Script answers without a CORS preflight
-      const res = await fetch(endpoint, { method: 'POST', body: data });
-      const out = await res.json().catch(() => ({}));
-      if (!res.ok || !out.ok) throw new Error(out.error || 'Request failed');
-      form.reset(); form.classList.add('sent');
-      setStatus('Thanks! Your message is in. I’ll get back to you soon.', 'ok');
-    } catch (err) {
-      setStatus(err.message && err.message !== 'Request failed' && !/fetch/i.test(err.message)
-        ? err.message : 'Couldn’t send right now. Please try again, or email me directly.', 'error');
-    } finally {
-      form.classList.remove('sending'); sendBtn.disabled = false; sendLabel.textContent = 'Send Message';
-    }
-  });
-  form.addEventListener('input', e => { e.target.closest('.form-field')?.classList.remove('invalid'); form.classList.remove('sent'); });
 })();
