@@ -467,8 +467,13 @@ a.wk-screen:hover::after{opacity:1;transform:translate(-50%,-50%) scale(1)}
 }
 
 /* ---------- 13. reduced motion ---------- */
+/* Gentle, not frozen: iPhones with "Reduce Motion" on still get fades, the videos and the slow
+   ambient loops (ticker, turbine, badge). Only floating, zooming and parallax movement is removed. */
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   html:focus-within{scroll-behavior:auto}
   .wk-bend{transform:none}
+  .fl-in,.hero-glow i{animation:none}
+  .band-track{animation-duration:90s}
+  .band-back .band-track{animation-duration:110s}
+  .hero-badge svg{animation-duration:30s}
 }

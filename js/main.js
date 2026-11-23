@@ -103,6 +103,10 @@
       .from('.fl', { y: 50, scale: 0.85, opacity: 0, filter: 'blur(10px)', duration: 1.4, stagger: 0.14, ease: 'back.out(1.4)', clearProps: 'filter' }, 1.0)
       .from('.code .cl', { opacity: 0, x: -10, duration: 0.5, stagger: 0.16, ease: 'power2.out' }, 1.5)
       .from('#nav', { y: -30, opacity: 0, duration: 1, clearProps: 'transform,opacity' }, 0.9);
+  } else {                                           // Reduce Motion: the same entrance as soft fades, nothing moves
+    intro.from(heroChars, { opacity: 0, duration: 1.2, stagger: 0.08, ease: 'power1.out' }, 0.1)
+      .from(['#heroGlow', '#heroPhoto'], { opacity: 0, duration: 1.4, ease: 'power1.out' }, 0)
+      .from(['[data-hero]', '.fl', '#nav'], { opacity: 0, duration: 1, stagger: 0.08, ease: 'power1.out', clearProps: 'opacity' }, 0.5);
   }
 
   Promise.race([Promise.all([fonts, photoReady, wait(minTime)]), wait(6000)]).then(() => {
@@ -110,9 +114,10 @@
     const lift = () => {
       if (shown < 100) return requestAnimationFrame(lift);
       ticking = false;
+      intro.play(0);                                 // start the entrance as the loader begins to lift
       G.to(loader, {
-        clipPath: 'inset(0 0 100% 0)', duration: reduce ? 0 : 1.1, ease: 'expo.inOut', delay: 0.15,
-        onStart: () => intro.play(0),
+        ...(reduce ? { opacity: 0, duration: 0.6, ease: 'power1.out' } : { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'expo.inOut' }),
+        delay: 0.15,
         onComplete: () => { loader.remove(); document.body.style.overflow = ''; ST.refresh(); }
       });
     };
@@ -163,7 +168,7 @@
   const near = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { loadVideo(e.target); near.unobserve(e.target); } }), { rootMargin: '600px 0px' });
   const vis = new IntersectionObserver(es => es.forEach(e => {
     const v = e.target;
-    if (e.isIntersecting && !reduce) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause();
+    if (e.isIntersecting) { const p = v.play(); if (p) p.catch(() => {}); } else v.pause();   // muted loops play in every mode
   }), { threshold: 0.15 });
   $$('video.lazy-video').forEach(v => { near.observe(v); vis.observe(v); });
 
@@ -171,6 +176,8 @@
   // split once, outside matchMedia, so a resize never splits the same text twice
   const sayWords = $('#aboutSay') ? split($('#aboutSay')) : [];
   const scriptChars = $$('[data-script]').map(h => split(h, 'c'));
+  // batch reveals stagger, but never queue more than ~0.5s, so jumping down via the menu shows content at once
+  const cap = i => Math.min(i, 6) * 0.08;
 
   const mm = G.matchMedia();
   mm.add({
@@ -181,8 +188,19 @@
   }, ctx => {
     const { desk, phone, still } = ctx.conditions;
 
-    if (still) {                                     // reduced motion: content only, jump video shows its poster frame
-      const jv = $('#jumpVideo'); if (jv) loadVideo(jv);
+    if (still) {                                     // Reduce Motion: fades only — no sliding, pinning, zooming or parallax
+      const fadeIn = (t, extra) => G.fromTo(t, { opacity: 0 }, { opacity: 1, duration: 1, ease: 'power1.out', overwrite: true, ...extra });   // always ends fully visible
+      ST.batch('[data-up], [data-row], [data-cell], .wk-meta > *, .wk-screen, .moto-duo figure, #motoCopy > *', {
+        start: 'top 92%', once: true, onEnter: b => fadeIn(b, { stagger: cap })
+      });
+      scriptChars.forEach(chars => fadeIn(chars, { duration: 0.8, stagger: 0.03, scrollTrigger: { trigger: chars[0].parentElement, start: 'top 90%' } }));
+      $$('[data-lines]').forEach(h => fadeIn(h, { duration: 1.2, scrollTrigger: { trigger: h, start: 'top 90%' } }));
+      if (sayWords.length) {                         // the about sentence still lights up word by word (colour only)
+        G.set(sayWords, { opacity: 0.18 });
+        G.to(sayWords, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: '#aboutSay', start: 'top 85%', end: 'bottom 55%', scrub: true } });
+      }
+      const jv = $('#jumpVideo');                    // the jump plays as a normal loop instead of scrubbing
+      if (jv) { jv.classList.add('lazy-video'); jv.setAttribute('loop', ''); near.observe(jv); vis.observe(jv); $$('.jump-words li').forEach(li => li.classList.add('on')); }
       return;
     }
 
@@ -219,7 +237,7 @@
     });
     ST.batch('[data-up]', {
       start: 'top 90%', once: true,
-      onEnter: b => G.from(b, { y: 40, opacity: 0, duration: 1.2, stagger: 0.08, overwrite: true })
+      onEnter: b => G.from(b, { y: 40, opacity: 0, duration: 1.2, stagger: cap, overwrite: true })
     });
 
     /* section headings: letters rise into place one by one */
@@ -250,8 +268,8 @@
     }
 
     /* rows (experience, education, notes) slide up in turn */
-    ST.batch('[data-row]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 36, opacity: 0, stagger: 0.08, duration: 1.1, overwrite: true }) });
-    ST.batch('[data-cell]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 50, opacity: 0, stagger: 0.07, duration: 1.2, overwrite: true }) });
+    ST.batch('[data-row]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 36, opacity: 0, stagger: cap, duration: 1.1, overwrite: true }) });
+    ST.batch('[data-cell]', { start: 'top 92%', once: true, onEnter: b => G.from(b, { y: 50, opacity: 0, stagger: cap, duration: 1.2, overwrite: true }) });
 
     /* UJ Moto A: a card opens to full screen around the footage */
     if (!phone) {
@@ -311,8 +329,7 @@
   function countUp(el) {
     const target = parseInt(el.dataset.count, 10), prefix = el.dataset.prefix || '', suffix = el.dataset.suffix || '';
     const show = v => { el.innerHTML = (prefix ? '<span class="pre">' + prefix.trim() + '</span>' : '') + Math.round(v).toLocaleString('en-US') + suffix; };
-    if (reduce) return show(target);
-    const o = { v: 0 }; show(0);
+    const o = { v: 0 }; show(0);                     // counting up isn't movement, so it runs in every mode
     G.to(o, { v: target, duration: 2, ease: 'power3.out', onUpdate: () => show(o.v) });
   }
   $$('[data-count]').forEach(el => ST.create({ trigger: el, start: 'top 90%', once: true, onEnter: () => countUp(el) }));
